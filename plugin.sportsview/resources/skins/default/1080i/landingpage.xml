@@ -1,0 +1,63 @@
+<window id="13000">
+    <controls>
+
+        <!-- #region GRASS  -->
+        <control type="image" id="Grass">
+            <left>0</left>
+            <top>0</top>
+            <width>100%</width>
+            <height>100%</height>
+            <colordiffuse>FFFFFFFF</colordiffuse>
+            <fadetime>200</fadetime>
+            <texture>special://home/addons/plugin.sportsview/resources/skins/default/media/grass.png</texture>
+            <!--<aspectratio>keep</aspectratio>-->
+        </control>
+        <!-- #endregion -->
+
+        <!-- #region LANDING PAGE MENU AND ITS BUTTONS -->
+        <control type="grouplist" id="MenuGroup">
+            <top>73%</top>
+            <left>0</left>
+            <width>100%</width>
+            <height>300</height>
+            <visible>true</visible>
+            <itemgap>100</itemgap>
+            <scrolltime tween="sine" easing="out">200</scrolltime>
+            <orientation>horizontal</orientation>
+            <visible>true</visible>
+            <align>center</align>
+
+            <!-- ALL SPORTS -->
+            <control type="button" id="1001">
+                <top>0</top>
+                <width>450</width>
+                <height>250</height>
+                <visible>true</visible>
+                <texturenofocus>special://home/addons/plugin.sportsview/resources/skins/default/media/all_sports.png</texturenofocus>        
+                <texturefocus>special://home/addons/plugin.sportsview/resources/skins/default/media/all_sports_focused.png</texturefocus>
+            </control>
+
+            <!-- MY MATCHES-->
+            <control type="button" id="1003">
+                <top>0</top>
+                <width>600</width>
+                <height>250</height>
+                <visible>true</visible>
+                <texturenofocus>special://home/addons/plugin.sportsview/resources/skins/default/media/mymatches.png</texturenofocus>
+                <texturefocus>special://home/addons/plugin.sportsview/resources/skins/default/media/mymatchesfocused.png</texturefocus>
+            </control>
+
+            <!-- FAVOURITES -->
+            <control type="button" id="1002">
+                <top>0</top>
+                <width>350</width>
+                <height>250</height>
+                <visible>true</visible>
+                <texturenofocus>special://home/addons/plugin.sportsview/resources/skins/default/media/favourites.png</texturenofocus>
+                <texturefocus>special://home/addons/plugin.sportsview/resources/skins/default/media/favourites_focused.png</texturefocus>
+            </control>
+            
+        </control>
+        <!-- #endregion -->
+    </controls>
+</window>
