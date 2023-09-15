@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<settings>
-    <category label="General" name="general">
-        <setting id="setting1" type="folder" label="SPORTS Folder" source="auto" option="writeable" />
-    </category>
-</settings>
