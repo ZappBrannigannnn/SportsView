@@ -15,3 +15,5 @@ class MyAddon(xbmcaddon.Addon):
 addon = MyAddon()
 
 addon.defaultrun()
+
+sdfsdfdsfsdfds
