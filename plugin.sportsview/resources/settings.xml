@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <settings>
-
     <category label="General" name="general">
 
         <setting id="setting1" type="folder" label="SPORTS Folder" source="auto" option="writeable" />
 
-        <setting id="setting2" type="text" label="TheSportsDB API Key" source="auto" hidden="true"></setting>
+        <setting id="setting2" type="text" visible="false" default="JNgyFlN7rFTCjzr35u/R/A=="/>
         
     </category>
     

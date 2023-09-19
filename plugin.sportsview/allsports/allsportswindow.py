@@ -10,11 +10,28 @@ import xbmcvfs
 import xbmc
 import time
 from allsports.allsportsapi import SportsAPI
+from cryptography.fernet import Fernet
+
 # endregion
 
 # Class AllSportsWindow
 # region
 class AllSportsWindow(xbmcgui.WindowXML):
+
+    # Your encryption key (keep it secret)
+    encryption_key = b'ZappBSportsVAPI6'
+
+    # Encrypted API key from settings.xml
+    encrypted_api_key = addon.getSetting('setting2')
+
+    # Initialize the Fernet cipher
+    cipher_suite = Fernet(encryption_key)
+
+    # Decrypt the API key
+    apikey = cipher_suite.decrypt(encrypted_api_key).decode('utf-8')
+
+
+
 
     addon = xbmcaddon.Addon()
     apikey = addon.getSetting('setting2')

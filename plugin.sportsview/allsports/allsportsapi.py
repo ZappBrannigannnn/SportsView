@@ -3,6 +3,7 @@ import requests
 class SportsAPI:
     def __init__(self, api_url):
         self.api_url = api_url
+        print("URLlglgsdfgfdgllldfsdfl", self.api_url)
     
     def get_sports_data(self):
         response = requests.get(self.api_url)
