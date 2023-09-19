@@ -10,7 +10,7 @@ import xbmcvfs
 import xbmc
 import time
 from allsports.allsportsapi import SportsAPI
-from cryptography.fernet import Fernet
+import base64
 
 # endregion
 
@@ -22,21 +22,12 @@ class AllSportsWindow(xbmcgui.WindowXML):
     encryption_key = b'ZappBSportsVAPI6'
 
     # Encrypted API key from settings.xml
+    addon = xbmcaddon.Addon()
     encrypted_api_key = addon.getSetting('setting2')
 
-    # Initialize the Fernet cipher
-    cipher_suite = Fernet(encryption_key)
+    apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
-    # Decrypt the API key
-    apikey = cipher_suite.decrypt(encrypted_api_key).decode('utf-8')
-
-
-
-
-    addon = xbmcaddon.Addon()
-    apikey = addon.getSetting('setting2')
-
-    API_URL = F"https://www.thesportsdb.com/api/v1/json/{apikey}/all_sports.php"
+    API_URL = f"https://www.thesportsdb.com/api/v1/json/{apikey}/all_sports.php"
     FALLBACK_IMAGE_PATH = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
     CACHE_DIR = xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache")
 
@@ -80,7 +71,7 @@ class AllSportsWindow(xbmcgui.WindowXML):
     # getSportsData
     # region
     def getSportsData(self):
-        sports_api = SportsAPI(self.API_URL)
+        sports_api = SportsAPI(self.api_url)
         return sports_api.get_sports_data()
     # endregion
 

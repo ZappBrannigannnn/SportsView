@@ -4,7 +4,7 @@
 
         <setting id="setting1" type="folder" label="SPORTS Folder" source="auto" option="writeable" />
 
-        <setting id="setting2" type="text" visible="false" default="JNgyFlN7rFTCjzr35u/R/A=="/>
+        <setting id="setting2" type="text" visible="false" default="OTg3NTIzOTg="/>
         
     </category>
     

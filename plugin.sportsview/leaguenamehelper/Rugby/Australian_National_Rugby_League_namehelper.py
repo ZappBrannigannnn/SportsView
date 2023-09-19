@@ -3,6 +3,7 @@
 import re
 import xbmcaddon
 import requests
+import base64
 from mymatches.mymatchesseasons import MyMatchesSeasons
 # endregion
 
@@ -133,8 +134,14 @@ class AustralianNationalRugbyLeagueHelper:
         print("GET EVENT INFO RUNNING")
         print("EVENT ID", event_id)
 
+        # Your encryption key (keep it secret)
+        encryption_key = b'ZappBSportsVAPI6'
+
+        # Encrypted API key from settings.xml
         addon = xbmcaddon.Addon()
-        apikey = addon.getSetting('setting2')
+        encrypted_api_key = addon.getSetting('setting2')
+
+        apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
         event_url = f"https://www.thesportsdb.com/api/v1/json/{apikey}/lookupevent.php?id={event_id}"
         print ("EVENT URLllllllllllllllllllllll", event_url)

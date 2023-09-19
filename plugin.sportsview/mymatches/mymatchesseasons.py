@@ -12,6 +12,7 @@ import requests
 import importlib
 import shutil
 import xbmc
+import base64
 from PIL import Image, ImageDraw, ImageFont
 
 # endregion
@@ -63,9 +64,15 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.awayteam_jersey_control = None
         self.awayteam_background_control = None
 
-        addon = xbmcaddon.Addon()
-        self.apikey = addon.getSetting('setting2')
+        # Your encryption key (keep it secret)
+        encryption_key = b'ZappBSportsVAPI6'
 
+        # Encrypted API key from settings.xml
+        addon = xbmcaddon.Addon()
+        encrypted_api_key = addon.getSetting('setting2')
+
+        self.apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
+        
 # endregion
 
     # Set parent window

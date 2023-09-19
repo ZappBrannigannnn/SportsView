@@ -10,6 +10,7 @@ import tempfile
 import math
 import hashlib
 import urllib.request
+import base64
 from allsports.allsportsapi import SportsAPI
 from myleagues.myleagueswindow import MyLeaguesWindow
 from PIL import Image, ImageDraw, ImageFont
@@ -18,8 +19,14 @@ from PIL import Image, ImageDraw, ImageFont
 # CLASS MySportsButtons
 # region
 
+# Your encryption key (keep it secret)
+encryption_key = b'ZappBSportsVAPI6'
+
+# Encrypted API key from settings.xml
 addon = xbmcaddon.Addon()
-apikey = addon.getSetting('setting2')
+encrypted_api_key = addon.getSetting('setting2')
+
+apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
 API_URL = f"https://www.thesportsdb.com/api/v1/json/{apikey}/all_sports.php"
 

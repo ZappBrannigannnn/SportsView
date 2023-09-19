@@ -1,13 +1,20 @@
 import requests
 import xbmcaddon
+import base64
 
 class MyLeaguesAPI:
     def __init__(self, sportname, leaguename):
         self.sportname = sportname
         self.leaguename = leaguename
 
+        # Your encryption key (keep it secret)
+        encryption_key = b'ZappBSportsVAPI6'
+
+        # Encrypted API key from settings.xml
         addon = xbmcaddon.Addon()
-        self.apikey = addon.getSetting('setting2')
+        encrypted_api_key = addon.getSetting('setting2')
+
+        self.apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
     def get_all_leagues(self):
         url = f'https://www.thesportsdb.com/api/v1/json/{self.apikey}/all_leagues.php'
