@@ -32,7 +32,7 @@ class MySportsWindow(xbmcgui.WindowXML):
     # onAction method in this class to handle the button action
     # region
     def onAction(self, action):
-        print("ON ACTION")
+
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()
         elif action == xbmcgui.ACTION_MOVE_LEFT:

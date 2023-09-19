@@ -58,7 +58,6 @@ class MyMatchesWindow(xbmcgui.WindowXML):
     # onAction method in this class to handle the button action
     # region
     def onAction(self, action):
-        print("ON ACTION")
         
         focused_control_id = self.matches_seasons.parent_window.getFocusId()
 

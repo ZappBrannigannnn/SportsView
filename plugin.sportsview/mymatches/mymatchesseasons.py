@@ -107,7 +107,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Display a vertical bar spanning from top to bottom next to season buttons
     # region
     def display_bar(self):
-        print("DISPLAY BAR RUNNING")
 
         # Create a ControlImage for the vertical bar
         bar_control = xbmcgui.ControlImage(
@@ -125,7 +124,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Display a vertical bar spanning from top to bottom next to event buttons
     # region
     def second_display_bar(self):
-        print("SECOND DISPLAY BAR RUNNING")
 
         # Create a ControlImage for the vertical bar
         bar_control = xbmcgui.ControlImage(
@@ -148,7 +146,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Create season buttons before generating custom font buttons
     # region
     def create_season_buttons(self):
-        print("CREATE SEASON BUTTONS RUNNING")
         # Calculate the button size based on the user's screen size (adjust the multiplier as needed)
         self.window_height = self.parent_window.getHeight()
         self.window_width = self.parent_window.getWidth()
@@ -210,7 +207,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Display the buttons
     # region
     def display_season_buttons(self):
-        print("DISPLAY BUTTONS RUNNING")
 
         # Calculate y position for button placement
         y_position = 0
@@ -258,7 +254,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # What matches are available in season of the league of the sport
     # region
     def matches_in_season(self):
-        print("MATCHES IN SEASON RUNNING")
 
         # Get the currently focused season index
         focused_season_index = self.focused_season_index
@@ -277,9 +272,9 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             self.available_matches = [match for match in os.listdir(season_folder_path) if os.path.isfile(os.path.join(season_folder_path, match))]
 
             if self.available_matches:
-                print("Available matches in season '{}':".format(self.focused_season_name), self.available_matches)
+                print("Available matches in season '{}'") #.format(self.focused_season_name), self.available_matches)
             else:
-                print("No matches available in season '{}'.".format(self.focused_season_name))
+                print("No matches available in season '{}'." .format(self.focused_season_name))
         else:
             print("No season focused or invalid focused index.")
             
@@ -356,7 +351,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Find which namehelper you need and call it.
     # region
     def call_dynamic_namehelper(self, events, id_league):
-        print("CALL DYNAMIC NAMEHELPER RUNNING")  
         
         # Construct the module name dynamically
         module_name = f"leaguenamehelper.{self.sportname.replace(' ', '_')}.{self.league_name.replace(' ', '_')}_namehelper"
@@ -368,8 +362,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         class_name = f"{self.league_name.replace(' ', '')}Helper"  # Replace with the actual class name
         
         helper_class = getattr(module, class_name)
-        print("Helper class", helper_class)
-        print(f"Found class '{class_name}' in module: {module_name}")  # Print class found
         
         # Create an instance of the class
         helper_instance = helper_class()
@@ -388,7 +380,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # RECEIVE event data from specific league name helper
     # region
     def receive_event_data(self, team01, team02, round_number, available_matches, events, event_id, event_data, my_matches_seasons_instance, match):
-        print("RECEIVE EVENT DATA RUNNING")
         
         self.sportname = my_matches_seasons_instance.sportname
         self.league_name = my_matches_seasons_instance.league_name
@@ -418,8 +409,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.event_button_data = my_matches_seasons_instance.event_button_data
         self.match_to_click = match
 
-        print("MATCH FROM RECEIVE IN MY MATCHES SEASONS", match)
-
         # Call the create_event_button method
         self.create_event_button_start(event_id, event_data, match)
     # endregion
@@ -427,7 +416,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Create event button start
     # region
     def create_event_button_start(self, event_id, event_data, match):
-        print("CREATE EVENT BUTTON RUNNING")
 
         # Extract relevant event information from event_data dictionary
         team01ID = event_data.get("idHomeTeam", "")
@@ -471,7 +459,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Create nofocus_event_button
     # region
     def create_nofocus_event_button(self, event_label, event_thumbnail, event_data, y_position, round_number, team01, team02, match):
-        print("CREATE NOFOCUS EVENT BUTTON RUNNING")
 
         # Define the font size and load the custom font
         font_size = 100  # Adjust the font size as needed
@@ -514,7 +501,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Create focus_event_button
     # region
     def create_focus_event_button(self, event_label, event_thumbnail, event_data, y_position, round_number, team01, team02, match):
-        print("CREATE FOCUS EVENT BUTTON RUNNING")
 
         # Load the previously saved noFocusTexture image
         nofocus_texture_path = self.temp_event_folder + event_label + ".png"
@@ -551,9 +537,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Display event button
     # region
     def display_event_button(self, event_label, event_thumbnail, event_data, y_position, round_number, team01, team02, match):
-        print("DISPLAY EVENT BUTTON RUNNING")
-
-        print("MATCH from display_event_button", match)
 
         # Create a button control for the event
         self.focused_event_texture_path = self.temp_event_folder + "focused_" + event_label + ".png"
@@ -571,10 +554,8 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         # Add the event button to the window
         self.parent_window.addControl(event_button)
         self.event_buttons.append(event_button)  # Keep track of buttons
-        print("Length of self.event_buttons:", len(self.event_buttons))
 
         button_id = event_button.getId()
-        print("BUTTON ID", button_id)
 
         # Associate additional information with the ControlButton
         self.event_button_data[button_id] = {
@@ -595,9 +576,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Get teams info for logos badges jerseys backgrounds
     # region
     def get_teams_info(self, team01, team02, team01ID, team02ID, match):
-        print("GET TEAMS INFO RUNNING")
         fallback_image = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
-        print("fallback_imageeeeeeeeeeeeeeeeee", fallback_image)
         hometeam_url = f"https://www.thesportsdb.com/api/v1/json/{self.apikey}/lookupteam.php?id={team01ID}"
         hometeam_response = requests.get(hometeam_url)
         if hometeam_response.status_code == 200:
@@ -645,7 +624,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # region
     def download_and_cache_image(self, url, save_path):
         if not os.path.exists(save_path):
-            print("URLllllllll:", url)
             if url.endswith("imagenotavailable.png"):  # Check if it's a local file
                 # Copy the local file to the specified save_path
                 source_path = url
@@ -667,7 +645,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Display the team images method
     # region
     def display_team_images(self):
-        print("DISPLAY TEAM IMAGES RUNNING")
 
         # Remove previous event images if they exist
         # region
@@ -897,7 +874,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # visible_season_buttons_info
     # region
     def visible_season_buttons_info(self):
-        print("VISIBLE SEASON BUTTONS INFO RUNNING")
+
         # Get the total number of buttons available
         num_buttons = len(self.reversed_seasons_in_folder)
 
@@ -914,7 +891,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # MOVE SEASON FOCUS BUTTONS 
     # region
     def moveSeasonFocus(self, x, y):
-        print("MOVE SEASON FOCUS RUNNING", x, y)
+
         new_index = self.focused_season_index + y
 
         # Check if the right button is pressed and a previously focused season index exists
@@ -976,7 +953,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Scroll up the SEASON buttons by one button height
     # region
     def scrollUpSeason(self):
-        print("SCROLL UP SEASON RUNNING")
+
         for button in self.season_buttons:
             new_y_position = button.getY() - (self.season_button_height)
             button.setPosition(button.getX(), new_y_position)
@@ -999,7 +976,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Scroll down the SEASON buttons by one button height
     # region
     def scrollDownSeason(self):
-        print("SCROLL DOWN SEASON RUNNING")
+
         for button in self.season_buttons:
             new_y_position = button.getY() + (self.season_button_height)
             button.setPosition(button.getX(), new_y_position)
@@ -1041,7 +1018,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # visible_event_buttons_info
     # region
     def visible_event_buttons_info(self):
-        print("VISIBLE EVENT BUTTONS INFO RUNNING")
+
         # Get the total number of buttons available
         num_buttons = len(self.event_buttons)
 
@@ -1058,7 +1035,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # MOVE EVENT FOCUS BUTTONS 
     # region
     def moveEventFocus(self, x, y):
-        print("MOVE EVENT FOCUS RUNNING", x, y)
+
         new_index = self.focused_event_index + y
 
         # Update the previously focused season index if moving left from the event button
@@ -1109,7 +1086,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Scroll up the EVENT buttons by one button height
     # region
     def scrollUpEvent(self):
-        print("SCROLL UP EVENT RUNNING")
+
         # Calculate button size based on screen size (adjust as needed)
         self.event_button_width = (self.window_width * 0.3)
         self.event_button_height = (self.window_height / 4)
@@ -1148,7 +1125,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Scroll down the EVENT buttons by one button height
     # region
     def scrollDownEvent(self):
-        print("SCROLL DOWN EVENT RUNNING")
+
         for button in self.event_buttons:
             new_y_position = button.getY() + int(self.event_button_height + 3)
             button.setPosition(button.getX(), new_y_position)
@@ -1174,19 +1151,15 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 # region
     # event_click method
     def event_clicked(self):
-        print("EVENT CLICK RUNNING")
-        focused_control_id = self.parent_window.getFocusId()
-        print("Focused control id:", focused_control_id)
 
+        focused_control_id = self.parent_window.getFocusId()
 
         data = self.event_button_data[focused_control_id]
         match_file = data.get("match_path", "")
-        print("MATCH PATCH in event_clicked:", match_file)
 
         addon = xbmcaddon.Addon()
         sports_folder_path = addon.getSetting('setting1')
         video_path = sports_folder_path + self.sportname + '/' + self.league_name + '/' + self.focused_season_name + '/' + match_file
-        print("MATCH PATH:", video_path)
 
         # Play the video in the fullscreen dialog
         xbmc.Player().play(video_path)

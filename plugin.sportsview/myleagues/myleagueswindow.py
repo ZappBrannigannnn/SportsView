@@ -31,7 +31,6 @@ class MyLeaguesWindow(xbmcgui.WindowXML):
 
         # Call the leagues_in_sport_folder method
         self.leagues_buttons.leagues_in_sport_folder()
-        print("LEAGUES_IN_SPORT_FOLDER CALLED ONINIT")
 
         # Call the new_or_cached method
         self.leagues_buttons.new_or_cached()
@@ -52,7 +51,6 @@ class MyLeaguesWindow(xbmcgui.WindowXML):
     # onAction method in this class to handle the button action
     # region
     def onAction(self, action):
-        print("myleagues window -- ON ACTION")
         if action == xbmcgui.ACTION_NAV_BACK:
             self.close()
         elif action == xbmcgui.ACTION_MOVE_LEFT:

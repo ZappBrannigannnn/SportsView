@@ -317,7 +317,7 @@ class MySportsButtons:
     # Update displayed image
     # region
     def update_displayed_image(self):
-        print("UPDATE DISPLAYED IMAGE")
+
         # Check if there are available sports and the focused index is valid
         if self.available_sports and 0 <= self.focused_index < len(self.available_sports):
             sport = self.available_sports[self.focused_index]
@@ -360,7 +360,6 @@ class MySportsButtons:
             else:
                 try:
                     # Fetch the image from the URL
-                    print("FETCHING IMAGE FROM API")
                     image_data = urllib.request.urlopen(sport_image_url).read()
 
                     # Create a temporary file to save the image from the API response
@@ -497,7 +496,6 @@ class MySportsButtons:
         # Create an instance of the WindowManager class
         self.window_manager = WindowManager()
 
-        print("LAUNCH MY LEAGUES WINDOW")
         # Call the show_my_leagues_page method of the existing WindowManager instance
         self.window_manager.show_my_leagues_page(sportname=self.sportname)
     # endregion

@@ -630,13 +630,11 @@ class MyLeaguesButtons(xbmcgui.WindowXML):
     # Method for launching My Matches window
     # region
     def launch_my_matches_window(self, focused_league_name):
-        print("LAUNCH_MY_MATCHES_WINDOW RUNNING")
         from window_manager import WindowManager
 
         # Create an instance of the WindowManager class
         self.window_manager = WindowManager()
 
-        print("LAUNCH MY MATCHES WINDOW")
         # Call the show_my_matches_page method of the existing WindowManager instance
         self.window_manager.show_my_matches_page(focused_league_name, self.sportname)
     # endregion
