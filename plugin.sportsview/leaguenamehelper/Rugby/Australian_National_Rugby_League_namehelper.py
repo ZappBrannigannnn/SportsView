@@ -144,7 +144,6 @@ class AustralianNationalRugbyLeagueHelper:
         cwd = xbmcaddon.Addon().getAddonInfo('path')
         my_matches_seasons = MyMatchesSeasons('mymatches.xml', cwd)
 
-    #try:
         # Send an HTTP GET request to the event URL
         response = requests.get(event_url)
         # Parse the response as JSON
@@ -162,12 +161,5 @@ class AustralianNationalRugbyLeagueHelper:
         else:
             # If the "events" key is not found, print an error message
             print("Event data not found for event ID:", event_id)
-    
-    #except requests.exceptions.RequestException as e:
-        # Handle exceptions related to the HTTP request (e.g., network issues)
-     #   print("Error fetching event dataaaaaa:", e)
-
-    #except IndexError:
-     #   print("Event data not found for event ID:", event_id)
-
-    # endregion
+            
+# endregion
