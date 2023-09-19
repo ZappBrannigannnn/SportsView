@@ -108,15 +108,6 @@ class AllSportsWindow(xbmcgui.WindowXML):
         self.last_visible_button_index = self.num_visible_rows * self.num_columns - 1
         font = ImageFont.truetype(self.font_path, self.font_size)
 
-        print("TOTAL NUMBER OF BUTTONS", self.num_buttons)
-        print("TOTAL NUMBER OF ROWS", self.num_rows)
-        print("NUMBER OF VISIBLE ROWS", self.num_visible_rows)
-        print("BUTTON WIDTH", button_width)
-        print("BUTTON HEIGHT", button_height)
-        print("WINDOW HEIGHT:", self.getHeight())
-        print("AVAILABLE HEIGHT", available_height)
-        print("BUTTON HEIGHT WITH GAP", button_height_with_gap)
-
         for index, sport in enumerate(sports_data):
             button_label = sport['strSport']
             button_image = sport['strSportThumb']
@@ -369,15 +360,6 @@ class AllSportsWindow(xbmcgui.WindowXML):
                 # Calculate the row and column of the last visible button on the screen
                 last_visible_button_row = self.last_visible_button_index // self.num_columns
                 last_visible_button_col = self.last_visible_button_index % self.num_columns
-
-                print("FIRST VISIBLE BUTTON ON SCREEN", self.first_visible_button_index)
-                print("LAST VISIBLE BUTTON ON SCREEN", self.last_visible_button_index)
-                print("FOCUSED BUTTON ROW", focused_button_row)
-                print("FOCUSED BUTTON COL", focused_button_col)
-                print("FIRST VISIBLE ROW", first_visible_button_row)
-                print("FIRST VISIBLE COL", first_visible_button_col)
-                print("LAST VISIBLE ROW", last_visible_button_row)
-                print("LAST VISIBLE COL", last_visible_button_col)
 
                 # Check if the focused button is at the edge of the screen
                 if y < 0 and focused_button_row < first_visible_button_row:
