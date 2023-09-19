@@ -18,16 +18,6 @@ import base64
 # region
 class AllSportsWindow(xbmcgui.WindowXML):
 
-    # Your encryption key (keep it secret)
-    encryption_key = b'ZappBSportsVAPI6'
-
-    # Encrypted API key from settings.xml
-    addon = xbmcaddon.Addon()
-    encrypted_api_key = addon.getSetting('setting2')
-
-    apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
-
-    API_URL = f"https://www.thesportsdb.com/api/v1/json/{apikey}/all_sports.php"
     FALLBACK_IMAGE_PATH = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
     CACHE_DIR = xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache")
 
@@ -39,6 +29,18 @@ class AllSportsWindow(xbmcgui.WindowXML):
 
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXML.__init__(self, *args, **kwargs)
+
+        # Your encryption key (keep it secret)
+        encryption_key = b'ZappBSportsVAPI6'
+
+        # Encrypted API key from settings.xml
+        addon = xbmcaddon.Addon()
+        encrypted_api_key = addon.getSetting('setting2')
+
+        apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
+
+        API_URL = f"https://www.thesportsdb.com/api/v1/json/{apikey}/all_sports.php"
+
         self.font_path = "special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf"
         self.font_size = 40
         self.line_spacing = 1
@@ -50,6 +52,7 @@ class AllSportsWindow(xbmcgui.WindowXML):
         self.controls = []
         self.vert_gap_size = 10  # Define the vertical gap size here
         self.loading_dialog = None
+        self.api_url = API_URL
     # endregion
 
     # onInit
