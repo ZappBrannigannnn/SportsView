@@ -8,8 +8,6 @@ class LandingPageWindow(xbmcgui.WindowXML):
 
     def onInit(self):
         current_window = xbmcgui.getCurrentWindowId()  
-        print("CURRENT WINDOW LANDING PAGE", current_window) 
-        xbmc.log("LandingPageWindow - onInit")
         allsports_focus = self.getControl(1003)  # Get the label control by its ID
         self.setFocus(allsports_focus)  # Set the focus to the label control
 
