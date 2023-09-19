@@ -73,8 +73,6 @@ class AustralianNationalRugbyLeagueHelper:
             team01 = None  # Initialize a placeholder for the first team's ID
             team02 = None  # Initialize a placeholder for the second team's ID
             video_path = match  # Initialize a placeholder for the video path
-            print("MATCHhchchchchchchc", match)
-
             
             # Iterate through the team mapping to find team IDs for the current match
             for team_name, team_data in AustralianNationalRugbyLeagueHelper.team_mapping.items():
@@ -89,7 +87,6 @@ class AustralianNationalRugbyLeagueHelper:
             round_match = re.search(r"Round (\d+)", match)
             if round_match:
                 round_number = int(round_match.group(1))
-                print("ROUND NUMBER", round_number)
             else:
                 print("Round number not found in match:", match)
 
@@ -131,8 +128,6 @@ class AustralianNationalRugbyLeagueHelper:
     # get_event_info method
     # region
     def get_event_info(self, team01, team02, round_number, available_matches, events, event_id, match):
-        print("GET EVENT INFO RUNNING")
-        print("EVENT ID", event_id)
 
         # Your encryption key (keep it secret)
         encryption_key = b'ZappBSportsVAPI6'
@@ -144,7 +139,6 @@ class AustralianNationalRugbyLeagueHelper:
         apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
         event_url = f"https://www.thesportsdb.com/api/v1/json/{apikey}/lookupevent.php?id={event_id}"
-        print ("EVENT URLllllllllllllllllllllll", event_url)
         
         # Create an instance of MyMatchesSeasons class
         cwd = xbmcaddon.Addon().getAddonInfo('path')
@@ -161,7 +155,6 @@ class AustralianNationalRugbyLeagueHelper:
             # Extract the first event's data (assuming it's an array)
             event_data = data["events"][0]
             # Now you can access different attributes of the event_data dictionary
-            print("EVENT DATA", event_data)
             
             # Call the receive_event_data method from the instance with event-related data
             my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match)
