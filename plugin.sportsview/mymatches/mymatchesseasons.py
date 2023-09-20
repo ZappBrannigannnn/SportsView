@@ -588,6 +588,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         fallback_image = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
         hometeam_url = f"https://www.thesportsdb.com/api/v1/json/{self.apikey}/lookupteam.php?id={team01ID}"
         hometeam_response = requests.get(hometeam_url)
+        
         if hometeam_response.status_code == 200:
             hometeam_data = hometeam_response.json()
             hometeam_logo = hometeam_data['teams'][0]['strTeamLogo']

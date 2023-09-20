@@ -84,7 +84,7 @@ class AustralianNationalRugbyLeagueHelper:
                         break  # We've found both teams, no need to continue checking
             
             round_number = None
-            round_match = re.search(r"Round (\d+)", match)
+            round_match = re.search(r"Round (\d+)|R\d{2}", match)
             if round_match:
                 round_number = int(round_match.group(1))
             else:
