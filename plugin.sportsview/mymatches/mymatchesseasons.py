@@ -14,7 +14,6 @@ import shutil
 import xbmc
 import base64
 from PIL import Image, ImageDraw, ImageFont
-
 # endregion
 
 # CLASS MYMATCHESSEASONS
@@ -272,7 +271,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             self.available_matches = [match for match in os.listdir(season_folder_path) if os.path.isfile(os.path.join(season_folder_path, match))]
 
             if self.available_matches:
-                print("Available matches in season '{}'") #.format(self.focused_season_name), self.available_matches)
+                print("Available matches in season '{}'".format(self.focused_season_name), self.available_matches)
             else:
                 print("No matches available in season '{}'." .format(self.focused_season_name))
         else:
@@ -290,6 +289,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Get all leagues
     # region
     def get_all_leagues(self):
+        print("GET ALL LEAGUES CALLED")
         url = f'https://www.thesportsdb.com/api/v1/json/{self.apikey}/all_leagues.php'
         response = requests.get(url)
         if response.status_code == 200:
@@ -308,11 +308,13 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Get correct league id by checking if the combination of my sport and league name matches a combination in the list of leagues
     # region
     def get_correct_league_id(self, leagues):
+        print("GET CORRECT LEAGUE ID CALLED")
         target_league = None
 
         for league in leagues: # searching each league in leagues
             if league['strLeague'] == self.league_name and league['strSport'] == self.sportname: # If strLeague and our league name match AND strSport and our sport name match
                 target_league = league  # then target_league is whatever league that was
+
                 break
                 
         if target_league:
@@ -320,6 +322,8 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             
             # Call the get_all_events_in_season method
             self.get_all_events_in_season(league_id)
+
+            print("LEAGUE ID:", league_id)
 
             return league_id
         else:
@@ -330,10 +334,11 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Get all events in league by season
     # region
     def get_all_events_in_season(self, league_id):
+        print("GET ALL EVENTS IN SEASON CALLED")
         # Extract the league id from the league_id league objectc
         id_league = league_id['idLeague']  # Using dictionary indexing
  
-        url = f'https://www.thesportsdb.com/api/v1/json/{self.apikey}/eventsseason.php?id={id_league}&s={self.focused_season_name}' # DON'T DELETE THAT 'f'!!
+        url = f'https://www.thesportsdb.com/api/v1/json/{self.apikey}/eventsseason.php?id={id_league}&s={self.focused_season_name}'
         response = requests.get(url)
         if response.status_code == 200:
             data = response.json()
@@ -351,10 +356,13 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Find which namehelper you need and call it.
     # region
     def call_dynamic_namehelper(self, events, id_league):
+        print("CALLING DYNAMIC NAMEHELPER")
         
         # Construct the module name dynamically
         module_name = f"leaguenamehelper.{self.sportname.replace(' ', '_')}.{self.league_name.replace(' ', '_')}_namehelper"
-
+        
+        print("MODULE NAME", module_name)
+        
         # Import the module dynamically
         module = importlib.import_module(module_name)
         
