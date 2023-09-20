@@ -176,7 +176,6 @@ class AustralianNationalRugbyLeagueHelper:
             
 # endregion
 
-###############################################################################################################3
     # Getting image info start
     # region
     def get_more_info(self, event_id, event_data, match, round_number, available_matches, events):
@@ -275,6 +274,8 @@ class AustralianNationalRugbyLeagueHelper:
             print(f"Image already cached: {save_path}")
     # endregion
 
+    # Consolidate data method
+    # region
     def consolidate_data(self, team01, team02, round_number, available_matches, events, event_id, event_data, match, hometeam_background, hometeam_logo, hometeam_badge, hometeam_jersey, awayteam_background, awayteam_logo, awayteam_badge, awayteam_jersey, event_label, event_thumbnail):
         print("CONSOLIDATE DATA RUNNING")
 
@@ -294,3 +295,4 @@ class AustralianNationalRugbyLeagueHelper:
 
         # Call the receive_event_data method from the instance with event-related data
         my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match, top_background, top_left, top_center, top_right, bottom_background, bottom_left, bottom_center, bottom_right, VS, event_label, event_thumbnail)
+    # endregion
