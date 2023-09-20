@@ -484,7 +484,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         draw = ImageDraw.Draw(image)
 
         # Define the position and text for the round number
-        text = f"Round {round_number}"
+        text = round_number
         text_size = font.getsize(text)
         text_width = text_size[0]
         half_text_width = int((text_width / 2) - 340)

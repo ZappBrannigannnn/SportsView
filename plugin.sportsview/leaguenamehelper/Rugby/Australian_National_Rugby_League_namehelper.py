@@ -148,6 +148,9 @@ class AustralianNationalRugbyLeagueHelper:
         response = requests.get(event_url)
         # Parse the response as JSON
         data = response.json()
+
+        round_number = "Round " + str(round_number)
+        print("ROUND NUM NUMBER:", round_number)
         
         # Check if the "events" key is present in the JSON data
         if "events" in data:
