@@ -423,8 +423,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.create_event_button_start(event_id, event_data, match, event_label, top_background, top_left, top_center, top_right, bottom_background, bottom_left, bottom_center, bottom_right, VS, event_thumbnail, team01, team02)
     # endregion
 
-
-########################## THESE WILL NEED EDITING TO CHANGE WHAT THE BUTTON USES
     # Create event button start
     # region
     def create_event_button_start(self, event_id, event_data, match, event_label, top_background, top_left, top_center, top_right, bottom_background, bottom_left, bottom_center, bottom_right, VS, event_thumbnail, team01, team02):
@@ -575,6 +573,8 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # region
     def display_team_images(self):
 
+        button_id = self.focused_event_name.getId()
+
         # Remove previous event images if they exist
         # region
         if self.hometeam_logo_control is not None:
@@ -600,17 +600,11 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.event_button_width = int(self.window_width * 0.3)
         self.event_button_height = ((self.window_height / 4) - 7)
 
-        button_id = self.focused_event_name.getId()
-        
         if button_id in self.event_button_data:
             data = self.event_button_data[button_id]
             team01NAME = data.get("team01NAME", "")
             team02NAME = data.get("team02NAME", "")
             match_path = data.get("match_path", "")
-
-            print("team01NAME: " + team01NAME)
-            print("team02NAME: " + team02NAME)
-            print("match_path: " + match_path)
 
         available_width = int(self.window_width - (self.season_button_width + 15 + self.event_button_width + 15))
         logo_width = int(available_width / 3)
@@ -620,11 +614,15 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         center_image_location = int(starting_x + (available_width / 2) - (logo_width / 2))
         right_image_location = int(starting_x + (available_width - (logo_width + 15)))
         bottom_image_location = int(self.window_height - (logo_height + (logo_height / 2)))
+
+        print("team01NAME", team01NAME)
+        print("team02NAME", team02NAME)
+        print("match_path", match_path)
         # endregion
 
         # Create the hometeam_background for the event
         # region
-        if team01Name != None and team02Name != None:
+        if team01NAME != None:
 
             hometeam_background = xbmcgui.ControlImage(
                 x=starting_x,  # season button + bar + event button + bar
@@ -654,7 +652,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the hometeam_logo for the event
         # region
-        if team01NAME != None and team02NAME != None:
+        if team01NAME != None:
             hometeam_logo = xbmcgui.ControlImage(
                 x=left_image_location,
                 y=int(logo_height / 2),  
@@ -680,7 +678,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the hometeam_jersey for the event
         # region
-        if team01NAME != None and team02NAME != None:
+        if team01NAME != None:
             hometeam_jersey = xbmcgui.ControlImage(
                 x=center_image_location,  # season button + bar + event button + bar + space
                 y= int(logo_height / 2),  # Adjust as needed
@@ -706,7 +704,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the hometeam_badge for the event
         # region
-        if team01NAME != None and team02NAME != None:
+        if team01NAME != None:
             hometeam_badge = xbmcgui.ControlImage(
                 x=right_image_location,  # season button + bar + event button + bar + space
                 y=int(logo_height / 2),  # Adjust as needed
@@ -732,7 +730,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the awayteam_background for the event
         # region
-        if team01Name != None and team02Name != None:
+        if team02NAME != None:
             awayteam_background = xbmcgui.ControlImage(
                 x=starting_x,
                 y=int(self.window_height / 2),  # Adjust as needed
@@ -760,10 +758,10 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the awayteam_logo for the event
         # region
-        if team01NAME != None and team02NAME != None:
+        if team02NAME != None:
             awayteam_logo = xbmcgui.ControlImage(
                 x=left_image_location,
-                y=int(logo_height / 2),  
+                y= bottom_image_location,  
                 width=logo_width,
                 height=logo_height,
                 filename=f"{self.temp_team_folder}/{team02NAME}_logo.png"
@@ -771,7 +769,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         else:
             awayteam_logo = xbmcgui.ControlImage(
                 x=left_image_location,
-                y=int(logo_height / 2),  
+                y= bottom_image_location,  
                 width=logo_width,
                 height=logo_height,
                 filename=f"{self.temp_team_folder}/{match_path}_logo.png"
@@ -786,20 +784,20 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the awayteam_jersey for the event
         # region
-        if team01NAME != None and team02NAME != None:
+        if team02NAME != None:
             awayteam_jersey = xbmcgui.ControlImage(
-                x=center_image_location,  # season button + bar + event button + bar + space
-                y= int(logo_height / 2),  # Adjust as needed
+                x=center_image_location, 
+                y= bottom_image_location,
                 width=logo_width,
-                height=int(self.event_button_height),
+                height=logo_height,
                 filename=f"{self.temp_team_folder}/{team02NAME}_jersey.png"
-                )
+            )
         else:
             awayteam_jersey = xbmcgui.ControlImage(
-                x=center_image_location,  # season button + bar + event button + bar + space
-                y= int(logo_height / 2),  # Adjust as needed
+                x=center_image_location, 
+                y= bottom_image_location,
                 width=logo_width,
-                height=int(self.event_button_height),
+                height=logo_height,
                 filename=f"{self.temp_team_folder}/{match_path}_jersey.png"
                 )
 
@@ -812,20 +810,20 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the awayteam_badge for the event
         # region
-        if team01NAME != None and team02NAME != None:
+        if team02NAME != None:
             awayteam_badge = xbmcgui.ControlImage(
-                x=right_image_location,  # season button + bar + event button + bar + space
-                y=int(logo_height / 2),  # Adjust as needed
+                x=right_image_location,
+                y= bottom_image_location,
                 width=logo_width,
-                height=int(self.event_button_height),
+                height=logo_height,
                 filename=f"{self.temp_team_folder}/{team02NAME}_badge.png"
-                )
+            )
         else:
             awayteam_badge = xbmcgui.ControlImage(
-                x=right_image_location,  # season button + bar + event button + bar + space
-                y=int(logo_height / 2),  # Adjust as needed
+                x=right_image_location,
+                y= bottom_image_location,
                 width=logo_width,
-                height=int(self.event_button_height),
+                height=logo_height,
                 filename=f"{self.temp_team_folder}/{match_path}_badge.png"
                 )
 
