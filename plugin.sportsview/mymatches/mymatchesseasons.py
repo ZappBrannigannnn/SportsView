@@ -416,6 +416,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.team01ID = my_matches_seasons_instance.team01ID
         self.event_button_data = my_matches_seasons_instance.event_button_data
         self.match_to_click = match
+        self.round_number = round_number
 
         # Call the create_event_button method
         self.create_event_button_start(event_id, event_data, match)
@@ -430,7 +431,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         team02ID = event_data.get("idAwayTeam", "")
         team01 = event_data.get("strHomeTeam", "")
         team02 = event_data.get("strAwayTeam", "")
-        round_number = event_data.get("intRound", "")
+        round_number = self.round_number
         event_thumbnail = event_data.get("strThumb", "")  # Get the event thumbnail image URL
         
         # Calculate button size based on screen size (adjust as needed)
@@ -445,7 +446,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             y_position = 0
 
         # Generate a label for the event button
-        event_label = f"{team01} vs {team02} Round {round_number}"
+        event_label = f"{team01} vs {team02} Round {self.round_number}"
 
         # Call get_teams_info method for logos badges jerseys backgrounds
         self.get_teams_info(team01, team02, team01ID, team02ID, match)
