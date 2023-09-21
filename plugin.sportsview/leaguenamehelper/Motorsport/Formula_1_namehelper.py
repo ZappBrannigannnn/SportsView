@@ -5,9 +5,12 @@ import xbmcaddon
 import requests
 import base64
 from mymatches.mymatchesseasons import MyMatchesSeasons
+import xbmcvfs
+import os
+import shutil
 # endregion
 
-# AustralianNationalRugbyLeagueHelper class
+# Formula1Helper class
 # region
 class Formula1Helper:
     def __init__(self):
@@ -18,6 +21,17 @@ class Formula1Helper:
     # region
     def entry_method(self, focused_season_name, available_matches, id_league, events, my_matches_seasons_instance):
         self.my_matches_seasons_instance = my_matches_seasons_instance
+        self.round_number = None
+        self.temp_team_folder = my_matches_seasons_instance.temp_team_folder
+
+        # Your encryption key (keep it secret)
+        encryption_key = b'ZappBSportsVAPI6'
+
+        # Encrypted API key from settings.xml
+        addon = xbmcaddon.Addon()
+        encrypted_api_key = addon.getSetting('setting2')
+
+        self.apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
         # Call the get_team_ids_and_round method
         self.get_team_ids_and_round(available_matches, events)
@@ -67,7 +81,7 @@ class Formula1Helper:
             if round_match:
                 round_number_with_words = (round_match.group(0))
                 round_number = int(re.sub(r'\D|^0+', '', round_number_with_words))
-                
+                print("Round number:", round_number)   
             else:
                 print("Round number not found in match:", match)
 
@@ -128,11 +142,12 @@ class Formula1Helper:
 
         # Call the get_event_info method
         self.get_event_info(team01, team02, round_number, available_matches, events, event_id, match)
-    # endregion           
+    # endregion          
 
     # get_event_info method
     # region
     def get_event_info(self, team01, team02, round_number, available_matches, events, event_id, match):
+        print("GET EVENT INFO RUNNING")
 
         # Your encryption key (keep it secret)
         encryption_key = b'ZappBSportsVAPI6'
@@ -145,10 +160,6 @@ class Formula1Helper:
 
         event_url = f"https://www.thesportsdb.com/api/v1/json/{apikey}/lookupevent.php?id={event_id}"
         
-        # Create an instance of MyMatchesSeasons class
-        cwd = xbmcaddon.Addon().getAddonInfo('path')
-        my_matches_seasons = MyMatchesSeasons('mymatches.xml', cwd)
-
         # Send an HTTP GET request to the event URL
         response = requests.get(event_url)
         # Parse the response as JSON
@@ -160,11 +171,87 @@ class Formula1Helper:
             event_data = data["events"][0]
             # Now you can access different attributes of the event_data dictionary
             
-            # Call the receive_event_data method from the instance with event-related data
-            my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match)
+            # Call the create event button start method
+            self.get_more_info(event_id, event_data, match, round_number, available_matches, events, event_url)
 
         else:
             # If the "events" key is not found, print an error message
             print("Event data not found for event ID:", event_id)
             
 # endregion
+
+    # Getting image info start
+    # region
+    def get_more_info(self, event_id, event_data, match, round_number, available_matches, events, event_url):
+        print("GET MORE INFO RUNNING")
+        
+        # Extract relevant event information from event_data dictionary
+        team01ID = None
+        team02ID = None
+        team01 = None
+        team02 = None
+        event_thumbnail = event_data.get("strThumb", "")  # EVENT BUTTON IMAGE 
+        
+        # Generate a label for the event button
+        event_label = event_data.get("idEvent", "")
+
+        # Call get_teams_info method for logos badges jerseys backgrounds
+        self.get_teams_info(team01, team02, team01ID, team02ID, match, round_number, available_matches, events, event_id, event_data, event_label, event_thumbnail, event_url)
+
+        # endregion
+
+    # Get teams info for logos badges jerseys backgrounds
+    # region
+    def get_teams_info(self, team01, team02, team01ID, team02ID, match, round_number, available_matches, events, event_id, event_data, event_label, event_thumbnail, event_url):
+        print("GET TEAMS INFO RUNNING")
+        fallback_image = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
+        event_response = requests.get(event_url)
+        
+        if event_response.status_code == 200:
+            event_get_data = event_response.json()
+            event_banner = event_get_data['events'][0]['strBanner']
+            event_poster = event_get_data['events'][0]['strPoster']
+            event_thumb = event_get_data['events'][0]['strThumb']
+
+            # Check if any of the images is "null" and use a fallback image if necessary
+            event_banner = event_banner if event_banner != None else fallback_image
+            event_poster = event_poster if event_poster != None else fallback_image
+            event_thumb = event_thumb if event_thumb != None else fallback_image
+
+            # Download and cache the images
+            self.download_and_cache_image(event_banner, os.path.join(self.temp_team_folder, f"{event_id}_banner.png"))
+            self.download_and_cache_image(event_poster, os.path.join(self.temp_team_folder, f"{event_id}_poster.png"))
+            self.download_and_cache_image(event_thumb, os.path.join(self.temp_team_folder, f"{event_id}_thumb.png"))
+
+        # Sports that requires the VERSUS Bar to be displayed
+        VERSUS = "NO"
+
+        # Create an instance of MyMatchesSeasons class
+        cwd = xbmcaddon.Addon().getAddonInfo('path')
+        my_matches_seasons = MyMatchesSeasons('mymatches.xml', cwd)
+
+        # Call the receive_event_data method from the instance with event-related data
+        my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match, VS, event_label, event_thumbnail)
+    # endregion
+
+    # Download and cache logos badges jerseys backgrounds
+    # region
+    def download_and_cache_image(self, url, save_path):
+        if not os.path.exists(save_path):
+            if url.endswith("imagenotavailable.png"):  # Check if it's a local file
+                # Copy the local file to the specified save_path
+                source_path = url
+                shutil.copyfile(source_path, save_path)
+                print(f"Local file copied and cached: {save_path}")
+            else:
+                # It's a remote URL, perform the HTTP request
+                response = requests.get(url)
+                if response.status_code == 200:
+                    with open(save_path, 'wb') as f:
+                        f.write(response.content)
+                        print(f"Image downloaded and cached: {save_path}")
+                else:
+                    print(f"Failed to download image: {url}")
+        else:
+            print(f"Image already cached: {save_path}")
+    # endregion

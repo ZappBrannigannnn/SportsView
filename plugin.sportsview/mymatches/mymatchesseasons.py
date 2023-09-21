@@ -387,7 +387,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
     # RECEIVE event data from specific league name helper
     # region
-    def receive_event_data(self, team01, team02, round_number, available_matches, events, event_id, event_data, my_matches_seasons_instance, match, top_background, top_left, top_center, top_right, bottom_background, bottom_left, bottom_center, bottom_right, VS, event_label, event_thumbnail):
+    def receive_event_data(self, team01, team02, round_number, available_matches, events, event_id, event_data, my_matches_seasons_instance, match, VERSUS, event_label, event_thumbnail):
 
         print("RECEIVE EVENT DATA RUNNING")
         self.sportname = my_matches_seasons_instance.sportname
@@ -420,12 +420,12 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.round_number = round_number
 
         # Call the create_event_button method
-        self.create_event_button_start(event_id, event_data, match, event_label, top_background, top_left, top_center, top_right, bottom_background, bottom_left, bottom_center, bottom_right, VS, event_thumbnail, team01, team02)
+        self.create_event_button_start(event_id, event_data, match, event_label, VERSUS, event_thumbnail, team01, team02)
     # endregion
 
     # Create event button start
     # region
-    def create_event_button_start(self, event_id, event_data, match, event_label, top_background, top_left, top_center, top_right, bottom_background, bottom_left, bottom_center, bottom_right, VS, event_thumbnail, team01, team02):
+    def create_event_button_start(self, event_id, event_data, match, event_label, VERSUS, event_thumbnail, team01, team02):
 
         # Calculate button size based on screen size (adjust as needed)
         self.event_button_width = (self.window_width * 0.3)

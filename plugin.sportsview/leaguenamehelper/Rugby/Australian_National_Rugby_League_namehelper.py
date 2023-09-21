@@ -247,8 +247,14 @@ class AustralianNationalRugbyLeagueHelper:
             self.download_and_cache_image(awayteam_jersey, os.path.join(self.temp_team_folder, f"{team02}_jersey.png"))
             self.download_and_cache_image(awayteam_background, os.path.join(self.temp_team_folder, f"{team02}_background.png"))
         
-        # Call consolidate data method
-        self.consolidate_data(team01, team02, round_number, available_matches, events, event_id, event_data, match, hometeam_background, hometeam_logo, hometeam_badge, hometeam_jersey, awayteam_background, awayteam_logo, awayteam_badge, awayteam_jersey, event_label, event_thumbnail)
+        VERSUS = "YES"
+
+        # Create an instance of MyMatchesSeasons class
+        cwd = xbmcaddon.Addon().getAddonInfo('path')
+        my_matches_seasons = MyMatchesSeasons('mymatches.xml', cwd)
+
+        # Call the receive_event_data method from the instance with event-related data
+        my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match, VERSUS, event_label, event_thumbnail)
 
     # endregion
 
@@ -273,26 +279,4 @@ class AustralianNationalRugbyLeagueHelper:
         else:
             print(f"Image already cached: {save_path}")
     # endregion
-
-    # Consolidate data method
-    # region
-    def consolidate_data(self, team01, team02, round_number, available_matches, events, event_id, event_data, match, hometeam_background, hometeam_logo, hometeam_badge, hometeam_jersey, awayteam_background, awayteam_logo, awayteam_badge, awayteam_jersey, event_label, event_thumbnail):
-        print("CONSOLIDATE DATA RUNNING")
-
-        top_background = hometeam_background
-        top_left = hometeam_logo
-        top_center = hometeam_jersey
-        top_right = hometeam_badge
-        bottom_background = awayteam_background
-        bottom_left = awayteam_logo
-        bottom_center = awayteam_jersey
-        bottom_right = awayteam_badge
-        VS = "yes"
-        
-        # Create an instance of MyMatchesSeasons class
-        cwd = xbmcaddon.Addon().getAddonInfo('path')
-        my_matches_seasons = MyMatchesSeasons('mymatches.xml', cwd)
-
-        # Call the receive_event_data method from the instance with event-related data
-        my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match, top_background, top_left, top_center, top_right, bottom_background, bottom_left, bottom_center, bottom_right, VS, event_label, event_thumbnail)
-    # endregion
+    
