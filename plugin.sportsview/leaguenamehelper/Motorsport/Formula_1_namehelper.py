@@ -231,7 +231,7 @@ class Formula1Helper:
         my_matches_seasons = MyMatchesSeasons('mymatches.xml', cwd)
 
         # Call the receive_event_data method from the instance with event-related data
-        my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match, VS, event_label, event_thumbnail)
+        my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match, VERSUS, event_label, event_thumbnail)
     # endregion
 
     # Download and cache logos badges jerseys backgrounds
