@@ -626,10 +626,10 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         print("event_id", event_id)
         # endregion
 
-        # Create the hometeam_background for the event (poster)
+        # Create the hometeam_background for the event (poster else thumb else banner)
         # region
         if team01NAME != None:
-
+            print("USING BACKGROUND")
             hometeam_background = xbmcgui.ControlImage(
                 x=starting_x,  # season button + bar + event button + bar
                 y=0,  # Adjust as needed
@@ -639,9 +639,10 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                 colorDiffuse="0x50FFFFFF" # Change the 0xFF to 0xE0, 0xD0, 0xC0, 0xB0, 0xA0, 0x90, 0x80, 0x70, 0x60, 0x50, 0x40, 0x30, 0x20, 0x10, 0x00 to reduce opacity
             )
 
+######################################CHECK WITH EVENT THAT HAS NO POSTER OR THUMBNAIL#############################################            
         else:
-
             if os.path.exists(f"{self.temp_team_folder}/{team01NAME}_poster.png"):
+                print("USING POSTER")
                 hometeam_background = xbmcgui.ControlImage(
                     x=int((available_width - (available_width - 170)) / 2) + starting_x,  # season button + bar + event button + bar
                     y=0,  # Adjust as needed
@@ -650,6 +651,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                     filename=f"{self.temp_team_folder}/{event_id}_poster.png",
                 )
             elif os.path.exists(f"{self.temp_team_folder}/{team01NAME}_thumb.png"):
+                print("NO POSTER FOUND USING THUMBNAIL")
                 hometeam_background = xbmcgui.ControlImage(
                     x=int((available_width - (available_width - 170)) / 2) + starting_x,  # season button + bar + event button + bar
                     y=0,  # Adjust as needed
@@ -658,6 +660,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                     filename=f"{self.temp_team_folder}/{event_id}_thumb.png",
                 )
             elif os.path.exists(f"{self.temp_team_folder}/{team01NAME}_banner.png"):
+                print("NO POSTER OR THUMBNAIL FOUND USING BANNER")
                 hometeam_background = xbmcgui.ControlImage(
                     x=int((available_width - (available_width - 170)) / 2) + starting_x,  # season button + bar + event button + bar
                     y=0,  # Adjust as needed
@@ -665,7 +668,9 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                     height=self.window_height,
                     filename=f"{self.temp_team_folder}/{event_id}.png",
                 )
-                
+            else:
+                print("NO IMAGE FOUND FOR THIS SHITTTTTTTTT")
+####################################################################################################################################               
         # Store the control for removal later
         self.hometeam_background_control = hometeam_background
 
@@ -1140,8 +1145,8 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
 # endregion
 
-# EVENT CLICK
-# region
+    # EVENT CLICK
+    # region
     # event_click method
     def event_clicked(self):
 
@@ -1156,3 +1161,5 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Play the video in the fullscreen dialog
         xbmc.Player().play(video_path)
+
+    # endregion

@@ -32,27 +32,31 @@ class MyMatchesWindow(xbmcgui.WindowXML):
     def onInit(self):
         xbmc.log("MyMatchesWindow - onInit")
 
-        # Call the seasons_in_league_folder method
-        self.matches_seasons.seasons_in_league_folder()
-        
-        # Call the create_season_buttons method
-        self.matches_seasons.create_season_buttons()
-        
-        # Call the focused_season method
-        self.matches_seasons.focused_season()
+        # Check if the window has already been initialized
+        if not hasattr(self, 'initialized') or not self.initialized:
+            # Call the seasons_in_league_folder method
+            self.matches_seasons.seasons_in_league_folder()
 
-        # Call the display_bar method
-        self.matches_seasons.display_bar()
+            # Call the create_season_buttons method
+            self.matches_seasons.create_season_buttons()
 
-        # Display the buttons on the my sports window
-        self.matches_seasons.display_season_buttons()
+            # Call the focused_season method
+            self.matches_seasons.focused_season()
 
-        # Call the visible_seasons_buttons_info method
-        self.matches_seasons.visible_season_buttons_info()
+            # Call the display_bar method
+            self.matches_seasons.display_bar()
 
-        # Call the visible_events_buttons_info method
-        self.matches_seasons.visible_event_buttons_info()
-        
+            # Display the buttons on the my sports window
+            self.matches_seasons.display_season_buttons()
+
+            # Call the visible_seasons_buttons_info method
+            self.matches_seasons.visible_season_buttons_info()
+
+            # Call the visible_events_buttons_info method
+            self.matches_seasons.visible_event_buttons_info()
+
+            # Set the initialization flag
+            self.initialized = True
     # endregion
 
     # onAction method in this class to handle the button action
