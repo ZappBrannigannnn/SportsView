@@ -641,7 +641,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
 ######################################CHECK WITH EVENT THAT HAS NO POSTER OR THUMBNAIL#############################################            
         else:
-            if os.path.exists(f"{self.temp_team_folder}/{team01NAME}_poster.png"):
+            if os.path.exists(f"{self.temp_team_folder}/{event_id}_poster.png"):
                 print("USING POSTER")
                 hometeam_background = xbmcgui.ControlImage(
                     x=int((available_width - (available_width - 170)) / 2) + starting_x,  # season button + bar + event button + bar
@@ -650,7 +650,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                     height=self.window_height,
                     filename=f"{self.temp_team_folder}/{event_id}_poster.png",
                 )
-            elif os.path.exists(f"{self.temp_team_folder}/{team01NAME}_thumb.png"):
+            elif os.path.exists(f"{self.temp_team_folder}/{event_id}_thumb.png"):
                 print("NO POSTER FOUND USING THUMBNAIL")
                 hometeam_background = xbmcgui.ControlImage(
                     x=int((available_width - (available_width - 170)) / 2) + starting_x,  # season button + bar + event button + bar
@@ -659,7 +659,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                     height=self.window_height,
                     filename=f"{self.temp_team_folder}/{event_id}_thumb.png",
                 )
-            elif os.path.exists(f"{self.temp_team_folder}/{team01NAME}_banner.png"):
+            elif os.path.exists(f"{self.temp_team_folder}/{event_id}_banner.png"):
                 print("NO POSTER OR THUMBNAIL FOUND USING BANNER")
                 hometeam_background = xbmcgui.ControlImage(
                     x=int((available_width - (available_width - 170)) / 2) + starting_x,  # season button + bar + event button + bar

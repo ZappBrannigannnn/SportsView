@@ -17,7 +17,6 @@ class WindowManager:
         self.addon = xbmcaddon.Addon()
         self.cwd = self.addon.getAddonInfo('path')
         self.current_window = None
-        self.window_initialized = None
 # endregion
 
 # PAGES
@@ -29,16 +28,8 @@ class WindowManager:
         print("WINDOW MANAGER: LAUNCH LANDING PAGE")
         # Create and show the landing page window
         self.close_current_window()
-
-        # Check if the window has already been initialized
-        if self.window_initialized != "Landing":
-            # Create and show the landing page window
-            self.current_window = LandingPageWindow('landingpage.xml', self.cwd, 'default', '1080i')
-            self.window_initialized = "Landing"  # Set the flag to True
-            self.current_window.doModal()
-        else:
-            # Window has already been initialized, no need to recreate it
-            self.current_window.setFocus()
+        self.current_window = LandingPageWindow('landingpage.xml', self.cwd, 'default', '1080i')
+        self.current_window.doModal()
     # endregion
 
     # ALL SPORTS PAGE
@@ -47,16 +38,8 @@ class WindowManager:
         print("WINDOW MANAGER: LAUNCH ALL SPORTS PAGE")
         # Create and show the All Sports page window
         self.close_current_window()
-
-        # Check if the window has already been initialized
-        if self.window_initialized != "AllSports":
-            # Create and show the All Sports page window
-            self.current_window = AllSportsWindow('allsports.xml', self.cwd, 'default', '1080i')
-            self.window_initialized = AllSports  # Set the flag to True
-            self.current_window.doModal()
-        else:
-            # Window has already been initialized, no need to recreate it
-            self.current_window.setFocus()
+        self.current_window = AllSportsWindow('allsports.xml', self.cwd, 'default', '1080i')
+        self.current_window.doModal()
     # endregion
 
     # MY SPORTS PAGE
@@ -65,16 +48,8 @@ class WindowManager:
         print("WINDOW MANAGER: LAUNCH MY SPORTS PAGE")
         # Create and show the My Sports page window
         self.close_current_window()
-
-        # Check if the window has already been initialized
-        if self.window_initialized != "MySports":
-            # Create and show the My Sports page window
-            self.current_window = MySportsWindow('mysports.xml', self.cwd, 'default', '1080i')
-            self.window_initialized = "MySports"  # Set the flag to True
-            self.current_window.doModal()
-        else:
-            # Window has already been initialized, no need to recreate it
-            self.current_window.setFocus()
+        self.current_window = MySportsWindow('mysports.xml', self.cwd, 'default', '1080i')
+        self.current_window.doModal()
     # endregion
 
     # MY LEAGUES PAGE
@@ -83,16 +58,8 @@ class WindowManager:
         print("WINDOW MANAGER: LAUNCH MY LEAGUES PAGE")
         # Create and show the My Leagues page window
         self.close_current_window()
-
-        # Check if the window has already been initialized
-        if self.window_initialized != "MyLeagues":
-            # Create and show the My Leagues page window
-            self.current_window = MyLeaguesWindow('myleagues.xml', self.cwd, 'default', '1080i', sportname=sportname)
-            self.window_initialized = "MyLeagues"  # Set the flag to True
-            self.current_window.doModal()
-        else:
-            # Window has already been initialized, no need to recreate it
-            self.current_window.setFocus()
+        self.current_window = MyLeaguesWindow('myleagues.xml', self.cwd, 'default', '1080i', sportname=sportname)
+        self.current_window.doModal()
     # endregion
 
     # MY MATCHES PAGE
@@ -101,16 +68,8 @@ class WindowManager:
         print("WINDOW MANAGER: LAUNCH MY MATCHES PAGE")
         # Create and show the My Matches page window
         self.close_current_window()
-
-        # Check if the window has already been initialized
-        if self.window_initialized != "MyMatches":
-            # Create and show the My Matches page window
-            self.current_window = MyMatchesWindow('mymatches.xml', self.cwd, 'default', '1080i', sportname=sportname, league_name=focused_league_name)
-            self.window_initialized = "MyMatches"  # Set the flag to True
-            self.current_window.doModal()
-        else:
-            # Window has already been initialized, no need to recreate it
-            self.current_window.setFocus()
+        self.current_window = MyMatchesWindow('mymatches.xml', self.cwd, 'default', '1080i', sportname=sportname, league_name=focused_league_name)
+        self.current_window.doModal()
     # endregion
 
     # CLOSE CURRENT WINDOW
