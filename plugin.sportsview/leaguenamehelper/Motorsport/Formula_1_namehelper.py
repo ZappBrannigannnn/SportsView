@@ -1,3 +1,5 @@
+# FILE NAMES MUST CONTAIN THE TYPE OF RACE (FP1, FP2, FP3, QUALIFYING, RACE, SPRINT, GRAND PRIX) AND THE ROUND
+
 # IMPORTS
 # region
 import re
@@ -44,12 +46,11 @@ class Formula1Helper:
         # NOT USED BUT NEED TO BE PASSED
         team01 = None
         team02 = None
+        video_path = match  # Initialize a placeholder for the video path
+        race_type = None
 
+        # Iterate through the team mapping to find team IDs for the current match
         for match in available_matches:
-            race_type = None
-            video_path = match  # Initialize a placeholder for the video path
-            
-            # Iterate through the team mapping to find team IDs for the current match
             RACE = re.search(r"RACE|Grand Prix", match)
             if RACE is not None:
                 race_type = "RACE"

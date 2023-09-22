@@ -1,3 +1,5 @@
+# FILE NAMES MUST CONTAIN THE DATE AND THE NAMES OF THE 2 TEAMS PLAYING
+
 # IMPORTS
 # region
 import re
@@ -18,7 +20,7 @@ class MLBHelper:
         self.my_matches_seasons_instance = None
 # endregion
     
-    # Teams Dictionary
+    # Teams Dictionary (### Make one for any sport with set teams)
     # region
     team_mapping = {
         "Diamondbacks": {'team_id': '135267'},
@@ -74,7 +76,7 @@ class MLBHelper:
         self.get_team_ids_and_round(available_matches, events)
     # endregion
 
-    # get_team_ids_and_round method
+    # get_team_ids_and_round method (### Actually getting the team ids and DATE for this sport)
     # region
     def get_team_ids_and_round(self, available_matches, events):
         for match in available_matches:
