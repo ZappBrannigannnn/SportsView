@@ -181,7 +181,14 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
             # Choose a font (You can replace this with the path to your custom font file)
             custom_font_path = "special://home/addons/plugin.sportview/resources/fonts/ariblk.ttf"
-            desired_font_size = 50
+                    # Initialize font size based on season text length
+
+            if len(season) == 4:
+                desired_font_size = 50
+            elif len(season) == 9:
+                desired_font_size = 32
+            else:
+                font_size = 20  # Default font size for other lengths
 
             # Create a new ImageFont object with the desired font size
             font = ImageFont.truetype(custom_font_path, desired_font_size)

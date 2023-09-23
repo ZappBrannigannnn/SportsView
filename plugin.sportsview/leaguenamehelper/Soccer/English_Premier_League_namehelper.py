@@ -149,36 +149,24 @@ class EnglishPremierLeagueHelper:
 
             # Check if either home and away teams match team01 and team02, or vice versa
             if (event_home_team == team01_str and event_away_team == team02_str) or (event_home_team == team02_str and event_away_team == team01_str):
-                print("ALL 4 TEAMS MATCHED")
                 event_round = int(event["intRound"])
                 match_found = True
                 
                 # Check if the event's round matches the provided round_number
                 if match_found:
-                    print("EVENTttt_ROUND", event_round)
-                    print("ROUNDddd_NUMBER", round_number)
                     if event_round == round_number:
-                        print("ROUND MATCH FOUND")
 
                         event_id = event["idEvent"]  # Access the event ID
-                        print("event_id", event_id)
 
                         # Call the get_event_info method
                         self.get_event_info(team01, team02, round_number, available_matches, events, event_id, match)
                         break
-                    else:
-                        # If loop completes without a match, log a message
-                        print("ROUNDS DO NOT MATCH")
-            else:
-                print("NOT ALL 4 TEAMS MATCHED")
-
 
     # endregion           
 
     # get_event_info method
     # region
     def get_event_info(self, team01, team02, round_number, available_matches, events, event_id, match):
-        print("GET EVENT INFO RUNNING")
         # Your encryption key (keep it secret)
         encryption_key = b'ZappBSportsVAPI6'
 
@@ -214,7 +202,6 @@ class EnglishPremierLeagueHelper:
     # Getting image info start
     # region
     def get_more_info(self, event_id, event_data, match, round_number, available_matches, events):
-        print("GET MORE INFO RUNNING")
 
         self.round_number = round_number
         
@@ -237,7 +224,6 @@ class EnglishPremierLeagueHelper:
     # Get teams info for logos badges jerseys backgrounds
     # region
     def get_teams_info(self, team01, team02, team01ID, team02ID, match, round_number, available_matches, events, event_id, event_data, event_label, event_thumbnail):
-        print("GET TEAMS INFO RUNNING")
         fallback_image = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
         hometeam_url = f"https://www.thesportsdb.com/api/v1/json/{self.apikey}/lookupteam.php?id={team01ID}"
         hometeam_response = requests.get(hometeam_url)
