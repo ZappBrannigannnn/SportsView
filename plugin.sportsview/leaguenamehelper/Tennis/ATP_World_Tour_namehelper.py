@@ -1,6 +1,6 @@
 # FILE NAMES MUST CONTAIN THE DATE, THE NAME OF THE TOURNAMENT, AND THE LAST NAME OF THE PLAYERS WITH "vs" BETWEEN THEM
 # FOR EXAMPLE: "ATP.World.Tour.2023-01-02.Adelaide.International.1.Draper.vs.Kwon.mkv" 
-# THE DATE CAN BE ANYWHERE. BUT THE PLAYERS' NAMES MUST COME AFTER THE TOURNAMENT NAME
+# THE DATE CAN BE ANYWHERE. BUT THE PLAYERS' NAMES MUST COME AFTER THE TOURNAMENT NAME AND MUST HAVE "vs" BETWEEN THEM
 
 # IMPORTS
 # region
@@ -126,7 +126,7 @@ class ATPWorldTourHelper:
         # region
         for event_name_pre in ATPWorldTourHelper.event_mapping:
             normalized_event_name = event_name_pre.lower().replace(' ', '').replace('.', '')
-            normalized_match = match.lower().replace('.', '')  
+            normalized_match = match.lower().replace('.', '')
 
             if normalized_event_name in normalized_match:
 
@@ -169,7 +169,26 @@ class ATPWorldTourHelper:
             # region
             match_found = False
 
+            # STRIP AND SAVE THE TOURNAMENT NAME FROM THE EVENT NAME SO I ACCESS AND THEN SWITCH THE PLAYERS' NAMES AROUND IF NEEDED            
+            stripped_name = []
+            for tournament_name in ATPWorldTourHelper.event_mapping:
+                if tournament_name in event_name:
+                    event_name_tourn_removed = event_name.replace(tournament_name, "").strip()
+                    stripped_name.append(tournament_name)
+
+            # SPLIT THE PLAYERS ON EITHER SIDE OFF THE "vs"
+            players = event_name_tourn_removed.split("vs")
+            player1 = players[0].strip()
+            player2 = players[1].strip()
+
+            # CHECK IF EVENT_NAME (FROM FILENAME) AND EVENT_NAME_COMP (FROM MATCH) MATCH
             if event_name.lower() == event_name_comp.lower():
+                print("event_name and event_name_comp match")
+                match_found = True
+                break  # Exit the loop when a match is found
+
+            # IF THAT DIDN'T WORK FLIP THE PLAYERS' NAMES AND TRY AGAIN
+            elif f"{stripped_name[0]} {player2} vs {player1}".lower() == event_name_comp.lower():
                 print("event_name and event_name_comp match")
                 match_found = True
                 break  # Exit the loop when a match is found
