@@ -653,10 +653,10 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             elif os.path.exists(f"{self.temp_team_folder}/{event_id}_thumb.png"):
                 print("NO POSTER FOUND USING THUMBNAIL")
                 hometeam_background = xbmcgui.ControlImage(
-                    x=int((available_width - (available_width - 170)) / 2) + starting_x,  # season button + bar + event button + bar
+                    x=starting_x,  # season button + bar + event button + bar
                     y=0,  # Adjust as needed
-                    width=available_width - 170,
-                    height=self.window_height,
+                    width=available_width,
+                    height=self.window_height - 500,
                     filename=f"{self.temp_team_folder}/{event_id}_thumb.png",
                 )
             elif os.path.exists(f"{self.temp_team_folder}/{event_id}_banner.png"):
