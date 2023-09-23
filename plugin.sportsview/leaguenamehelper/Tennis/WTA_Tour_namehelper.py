@@ -15,9 +15,9 @@ import shutil
 from dateutil import parser
 # endregion
 
-# ATPWorldTourHelper class                                               
+# WTATourHelper class                                               
 # region
-class ATPWorldTourHelper:                                          
+class WTATourHelper:                                          
     def __init__(self):
         self.my_matches_seasons_instance = None
 # endregion
@@ -26,54 +26,45 @@ class ATPWorldTourHelper:
     # region
     event_mapping = {
         "Adelaide International 1",
-        "Adelaide International 2",
-        "Maharashtra Open",
         "ASB Classic",
+        "Adelaide International 2",
+        "Hobart International",
         "Australian Open",
-        "Cordoba Open",
-        "Open Sud de France",
-        "Dallas Open",
-        "Argentina Open",
-        "Delray Beach Open",
-        "ABN AMRO World Tennis Tournament",
-        "Qatar Exxon Mobil Open",
-        "Open 13",
-        "Rio Open",
-        "Dubai Tennis Championships",
-        "Chile Open",
-        "Abierto Mexicano",
+        "Thailand Open",
+        "Lyon Open",
+        "Abu Dhabi WTA Womens Tennis Open"
+        "Ladies Linz Open",
+        "Qatar Open",
+        "Dubai Duty Free Tennis Championships",
+        "Merida Open",
+        "ATX Open",
+        "Monterrey Open",
         "BNP Paribas Open",
         "Miami Open",
-        "Estoril Open",
-        "U.S. Mens Clay Court Championship",
-        "Grand Prix Hassan II",
-        "Monte Carlo Masters",
-        "Barcelona Open",
-        "Srpska Open",
-        "BMW Open",
+        "Copa Colsanitas",
+        "Charleston Open",
+        "Porsche Tennis Grand Prix",
         "Mutual Madrid Open",
-        "International BNL ditalia",
-        "Geneva Open",
-        "Lyon Open",
+        "Internazionali BNL ditalia",
+        "Morocco Open",
+        "Internationaux de Strasbourg",
         "French Open",
         "Rosmalen Grass Court Championships",
-        "Stuttgart Open",
-        "Halle Open",
-        "Queens Club Championships",
-        "Mallorca Open",
+        "Nottingham Open",
+        "German Open",
+        "Rothesay Classic",
+        "Bad Homburg Open",
         "Eastbourne International",
         "Wimbledon",
-        "Nordea Open",
-        "Suisse Open Gstaad",
-        "Hall of Fame Championships",
-        "Atlanta Open",
+        "Budapest Open",
+        "Internazionali Femminili di Palermo",
         "European Open",
-        "Croatian Open",
-        "Generali Open",
+        "Ladies Open Lausanne",
+        "Poland Open",
+        "Prague Open",
         "Citi Open",
-        "Los Cabos Open",
         "Canadian Open",
-        "Western and Southern Financial Group Masters",
+        "Western and Southern Financial Group Womens Open",
         "US Open"
         #### ADD MORE EVENTS HERE ####
     }
@@ -124,7 +115,7 @@ class ATPWorldTourHelper:
 
         # SEARCH FILENAME FOR MATCHES IN THE EVENTS DICTIONARY
         # region
-        for event_name_pre in ATPWorldTourHelper.event_mapping:
+        for event_name_pre in WTATourHelper.event_mapping:
             normalized_event_name = event_name_pre.lower().replace(' ', '').replace('.', '')
             normalized_match = match.lower().replace('.', '')
 
@@ -171,7 +162,7 @@ class ATPWorldTourHelper:
 
             # STRIP AND SAVE THE TOURNAMENT NAME FROM THE EVENT NAME SO I ACCESS AND THEN SWITCH THE PLAYERS' NAMES AROUND IF NEEDED            
             stripped_name = []
-            for tournament_name in ATPWorldTourHelper.event_mapping:
+            for tournament_name in WTATourHelper.event_mapping:
                 if tournament_name in event_name:
                     event_name_tourn_removed = event_name.replace(tournament_name, "").strip()
                     stripped_name.append(tournament_name)
@@ -301,6 +292,8 @@ class ATPWorldTourHelper:
         # Create an instance of MyMatchesSeasons class
         cwd = xbmcaddon.Addon().getAddonInfo('path')
         my_matches_seasons = MyMatchesSeasons('mymatches.xml', cwd)
+
+        round_number = ""
 
         # Call the receive_event_data method from the instance with event-related data
         my_matches_seasons.receive_event_data(team01, team02, round_number, available_matches, events, event_id, event_data, self.my_matches_seasons_instance, match, VERSUS, event_label, event_thumbnail)

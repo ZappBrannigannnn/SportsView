@@ -29,6 +29,9 @@ For example: "ATP.World.Tour.2023-01-02.Adelaide.International.1.Draper.vs.Kwon.
 Or: "2023-01-02.Adelaide.International.1.Kwon.vs.Draper.mkv"
 The date can be anywhere, but the tournament name and the players names must be at the end.
 
+WTA
+Same as ATP
+
 # endregion
 
 """

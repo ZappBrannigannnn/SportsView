@@ -14,6 +14,7 @@ import shutil
 import xbmc
 import base64
 from PIL import Image, ImageDraw, ImageFont
+import textwrap
 # endregion
 
 # CLASS MYMATCHESSEASONS
@@ -461,16 +462,47 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         font_path = os.path.join('special://home/addons/plugin.sportview/resources/fonts/ariblk.ttf')
         font = ImageFont.truetype(font_path, font_size)
 
-        # Download the image from the URL
-        response = requests.get(event_thumbnail)
-        if response.status_code == 200:
-            image_data = BytesIO(response.content)
-            image = Image.open(image_data)
-            
+        # Check if event_thumbnail is empty
+        if not event_thumbnail:
+            # Create a placeholder image
+            width, height = 1920, 1080  # Set the desired width and height
+            background_color = (200, 200, 200)  # Set the background color (white in this example)
+
+            # Create a new image with the specified width, height, and background color
+            placeholder_image = Image.new("RGB", (width, height), background_color)
+
+            # You can also draw text or shapes on the placeholder image if desired
+            draw = ImageDraw.Draw(placeholder_image)
+            text = match
+            text_color = (0, 0, 0)  # Set the text color (black in this example)
+            # Define a font and size
+            font = ImageFont.truetype("special://home/addons/plugin.sportview/resources/fonts/ariblk.ttf", size=160)  # Replace with the path to your font file and desired size
+            # Calculate the position to center the text
+            text_width, text_height = draw.textsize(text, font)
+            #x = (width - text_width) / 2
+            #y = (height - text_height) / 2
+
+            # Define the maximum width for word wrapping
+            max_width = 15  # Adjust to your desired maximum width
+
+            # Use textwrap to wrap the text within the specified width
+            wrapped_text = textwrap.fill(text, width=max_width)
+
+            # Draw the wrapped text with the specified font and size
+            draw.text((100, 100), wrapped_text, fill=text_color, font=font)
+
+
+            # Use the placeholder image
+            image = placeholder_image
+        else:
+            # Download the image from the URL
+            response = requests.get(event_thumbnail)
+            if response.status_code == 200:
+                image_data = BytesIO(response.content)
+                image = Image.open(image_data)
+                
         # Create a drawing object
         draw = ImageDraw.Draw(image)
-
-        print("SELF.ROUND_NUMBERrrrrrrrrrrrrrrrrrr", self.round_number)
 
         # Define the position and text for the round number
         text = str(self.round_number)
