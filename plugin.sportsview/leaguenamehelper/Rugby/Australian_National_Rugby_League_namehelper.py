@@ -10,6 +10,7 @@ from mymatches.mymatchesseasons import MyMatchesSeasons
 import xbmcvfs
 import os
 import shutil
+from dateutil import parser
 # endregion
 
 # AustralianNationalRugbyLeagueHelper class
@@ -84,42 +85,59 @@ class AustralianNationalRugbyLeagueHelper:
 
     # get_team_ids_and_round method
     # region
+    # region (NO CHANGES REQUIRED)
     def get_team_ids_and_round(self, available_matches, events):
+        # Iterate through the team mapping to find team IDs for the current match
         for match in available_matches:
             team01 = None  # Initialize a placeholder for the first team's ID
             team02 = None  # Initialize a placeholder for the second team's ID
             video_path = match  # Initialize a placeholder for the video path
-            
-            # Iterate through the team mapping to find team IDs for the current match
-            for team_name, team_data in AustralianNationalRugbyLeagueHelper.team_mapping.items():
+    # endregion
+
+            # USE TEAMS DICTIONARY TO FIND TEAM IDS (DELETE IF NOT A TEAM SPORT)
+            # region
+            for team_name, team_data in AustralianNationalRugbyLeagueHelper.team_mapping.items(): ### DON'T FORGET TO CHANGE THIS NAME!!!!!!
                 if team_name in match:
                     if team01 is None:  # If team01 is not assigned yet
                         team01 = team_data["team_id"]  # Assign the team_id to team01
                     else:
                         team02 = team_data["team_id"]  # Assign the team_id to team02
                         break  # We've found both teams, no need to continue checking
+            # endregion
             
+            # SEARCH THROUGH THE MATCH FILE NAME FOR THE ROUND NUMBER
+            # region
             round_number = None
             round_match = re.search(r"Round (\d+)|R\d{2}", match)
+            # endregion
+            
+            # IF ROUND MATCH HAS A VALUE, THEN CONVERT IT TO ROUND_NUMBER
+            # region
             if round_match:
                 round_number = int(round_match.group(1))
             else:
                 print("Round number not found in match:", match)
+            # endregion
 
+            # IF TEAM01, TEAM02, AND ROUND_NUMBER ARE NOT NONE THEN CALL THE GET_EVENT_ID METHOD
+            # region
             if team01 is not None and team02 is not None and round_number is not None:
                 self.get_event_id(team01, team02, round_number, available_matches, events, match)
             else:
                 print("Some information missing in match:", match)
+            # endregion
     # endregion
 
     # get_event_id method
     # region
     def get_event_id(self, team01, team02, round_number, available_matches, events, match):
 
-        # Convert team IDs to strings for accurate comparison
+        # Convert team IDs to strings for accurate comparison (DELETE IF NOT A TEAM SPORT)
+        # region
         team01_str = str(team01)
         team02_str = str(team02)
-
+        # endregion
+        
         # Loop through each event in the events list
         for event in events:
             event_home_team = event["idHomeTeam"]
@@ -175,7 +193,6 @@ class AustralianNationalRugbyLeagueHelper:
         else:
             # If the "events" key is not found, print an error message
             print("Event data not found for event ID:", event_id)
-            
 # endregion
 
     # Getting image info start
