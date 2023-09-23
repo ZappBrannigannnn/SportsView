@@ -88,7 +88,6 @@ class MyLeaguesButtons(xbmcgui.WindowXML):
         for league_name in cached_leagues:
             if league_name not in self.available_leagues:
                 cached_image_path = os.path.join(self.cache_folder, f"{league_name}.png")
-                xbmcvfs.delete(cached_image_path)  # Delete the cached image file
 
             else:
                 self.create_cached_buttons(league_name)
