@@ -34,4 +34,11 @@ Same as ATP
 
 # endregion
 
+SOCCER
+# region
+
+EPL
+Filenames must contain the round and the names of the 2 teams
+
+# endregion
 """
