@@ -23,6 +23,7 @@ class MyMatchesWindow(xbmcgui.WindowXML):
         cwd = xbmcaddon.Addon().getAddonInfo('path')
         self.matches_seasons = MyMatchesSeasons('mymatches.xml', cwd, sportname=self.sportname , league_name=self.league_name)
         self.matches_seasons.set_parent_window(self) # Set the parent_window attribute
+
 # endregion
 
 # endregion
@@ -34,6 +35,7 @@ class MyMatchesWindow(xbmcgui.WindowXML):
 
         # Check if the window has already been initialized
         if not hasattr(self, 'initialized') or not self.initialized:
+
             # Call the seasons_in_league_folder method
             self.matches_seasons.seasons_in_league_folder()
 
@@ -93,8 +95,8 @@ class MyMatchesWindow(xbmcgui.WindowXML):
                     self.matches_seasons.focused_event()
             elif focused_control_id in [button.getId() for button in self.matches_seasons.event_buttons]:
                 self.matches_seasons.event_clicked()
-                
             return
         else:
             pass
     # endregion
+

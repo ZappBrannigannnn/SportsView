@@ -30,7 +30,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.season_button_height = None
         self.season_button_width = None
         self.seasons_in_folder = []
-        self.temp_folder = xbmcvfs.translatePath("special://home/temp/sportsview/mymatchescache/")  # Temporary folder for cached images
+        self.temp_folder = xbmcvfs.translatePath("special://home/temp/sportsview/mymatches_seasons_cache/")  # Temporary folder for cached images
         self.temp_event_folder = xbmcvfs.translatePath("special://home/temp/sportsview/mymatches_events_cache/")
         self.temp_team_folder = xbmcvfs.translatePath("special://home/temp/sportsview/mymatches_teams_cache/")
         os.makedirs(self.temp_folder, exist_ok=True)  # Create the temp folder if it doesn't exist
@@ -188,7 +188,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             elif len(season) == 9:
                 desired_font_size = 32
             else:
-                font_size = 20  # Default font size for other lengths
+                desired_font_size = 20  # Default font size for other lengths
 
             # Create a new ImageFont object with the desired font size
             font = ImageFont.truetype(custom_font_path, desired_font_size)
@@ -276,7 +276,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             season_folder_path = os.path.join(league_folder_path, self.focused_season_name)
 
             # List available matches in the focused season folder
-            self.available_matches = [match for match in os.listdir(season_folder_path) if os.path.isfile(os.path.join(season_folder_path, match))]
+            self.available_matches = [match for match in os.listdir(season_folder_path)]
 
             if self.available_matches:
                 print("Available matches in season '{}'".format(self.focused_season_name), self.available_matches)
