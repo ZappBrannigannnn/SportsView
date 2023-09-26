@@ -281,8 +281,34 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             # List available matches in the focused season folder
             self.available_matches = [match for match in os.listdir(season_folder_path)]
 
+            # Define a custom sorting function to extract the round number from the filenames
+            def extract_round_number(match):
+                # Regular expression patterns to match different "Round" formats
+                round_patterns = [
+                    r'Round\s*(\d+)',   # Matches "Round ##"
+                    r'R\s*(\d+)',       # Matches "R ##"
+                    r'R_(\d+)',         # Matches "R_##"
+                    r'(\d+) Round'      # Matches "## Round"
+                ]
+
+                for part in match.split('-'):
+                    for pattern in round_patterns:
+                        match_result = re.search(pattern, part.strip())
+                        if match_result:
+                            try:
+                                return int(match_result.group(1))
+                            except ValueError:
+                                pass
+                return 0  # Default to 0 if no valid round number is found
+            
+            # Extract round numbers from the matches
+            round_numbers = [extract_round_number(match) for match in self.available_matches]
+
+            # Sort the matches based on the extracted round numbers in descending order
+            self.available_matches = [x for _, x in sorted(zip(round_numbers, self.available_matches), reverse=True)]
+
             if self.available_matches:
-                print("Available matches in season '{}'".format(self.focused_season_name), self.available_matches)
+                print("Available matches in seasonnnnnnnnnnnnnnnnnnnnnnn '{}'".format(self.focused_season_name), self.available_matches)
             else:
                 print("No matches available in season '{}'." .format(self.focused_season_name))
         else:
