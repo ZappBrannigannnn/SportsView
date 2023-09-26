@@ -870,7 +870,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             match_path = data.get("match_path", "")
             event_id = data.get("event_id", "")
  
-
         available_width = int(self.window_width - (self.season_button_width + 15 + self.event_button_width + 15))
         logo_width = int(available_width / 3)
         logo_height = int(self.window_height / 4)
@@ -883,7 +882,13 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the hometeam_background for the event (poster else thumb else banner)
         # region
-        if team01NAME != None:
+        print("Team01NAME", team01NAME)
+        print("Team02NAME", team02NAME)
+        print("MATCH PATH", match_path)
+        print("EVENT ID", event_id)
+
+
+        if team01NAME != "None" and team01NAME != None:
             print("USING BACKGROUND")
             hometeam_background = xbmcgui.ControlImage(
                 x=starting_x,  # season button + bar + event button + bar
@@ -1076,7 +1081,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         
         # Create the VS bar
         # region
-        if team01NAME != None and team02NAME != None:
+        if team01NAME != "None" and team01NAME != None and team02NAME != "None" and team02NAME != None:
             vs_bar = xbmcgui.ControlImage(
                 x=starting_x,
                 y=int(self.window_height / 2) - 75,
