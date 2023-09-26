@@ -25,8 +25,6 @@ class AllSportsWindow(xbmcgui.WindowXML):
     if not xbmcvfs.exists(CACHE_DIR):
         xbmcvfs.mkdirs(CACHE_DIR)
 
-    CACHE_EXPIRY = 604800  # Cache expiry time in seconds
-
     def __init__(self, *args, **kwargs):
         xbmcgui.WindowXML.__init__(self, *args, **kwargs)
 
@@ -115,16 +113,10 @@ class AllSportsWindow(xbmcgui.WindowXML):
             button_x = vert_gap_size + (index % self.num_columns) * (button_width + vert_gap_size)
             button_y = horiz_gap_size + (index // self.num_columns) * (button_height_with_gap + horiz_gap_size)
 
-            # Check if the image is already cached
+            # Always use the cached image
             cache_filename = self.getCacheFilename(button_image)
-            if self.isCacheValid(button_image, cache_filename):
-                # Use the cached image
-                image = xbmcgui.ControlImage(button_x, button_y, button_width, button_height, filename=cache_filename)
-                xbmc.log("USING CACHED IMAGE: " + cache_filename)  # Print the filename of the cached image
-            else:
-                # Download and cache the image
-                image = self.downloadAndCacheImage(button_image, button_x, button_y, button_width, button_height)
-                xbmc.log("USING NEW IMAGE: " + cache_filename)  # Print the filename of the new image
+            image = xbmcgui.ControlImage(button_x, button_y, button_width, button_height, filename=cache_filename)
+            xbmc.log("USING CACHED IMAGE: " + cache_filename)  # Print the filename of the cached image
 
             self.addControl(image)
             self.controls.append(image)
@@ -217,21 +209,18 @@ class AllSportsWindow(xbmcgui.WindowXML):
     def downloadAndCacheImage(self, image_url, x, y, width, height):
         try:
             cache_filename = self.getCacheFilename(image_url)
-            if self.isCacheValid(image_url, cache_filename):
-                return xbmcgui.ControlImage(x, y, width, height, filename=cache_filename)
-            else:
+
+            if not os.path.exists(cache_filename):
                 response = requests.get(image_url)
+
                 if response.status_code == 200:
                     # Use the button image if it was retrieved successfully
                     unfocused_image = Image.open(BytesIO(response.content))
-                    etag = response.headers.get('ETag')
-                    print("ETag for new image:", etag)  # Print the ETag value
                     unfocused_image.save(cache_filename)
-                    # Save the ETag value in the cache
-                    self.saveCacheETag(cache_filename, etag)
-                    return xbmcgui.ControlImage(x, y, width, height, filename=cache_filename)
                 else:
                     raise Exception("Failed to retrieve button image")
+
+            return xbmcgui.ControlImage(x, y, width, height, filename=cache_filename)
         except Exception as e:
             # Use the fallback image if there was an error retrieving the button image
             unfocused_image = Image.open(self.FALLBACK_IMAGE_PATH)
@@ -251,44 +240,6 @@ class AllSportsWindow(xbmcgui.WindowXML):
         etag_file = cache_filename + ".etag"
         with open(etag_file, 'w') as f:
             f.write(etag)
-    # endregion
-
-    # isCacheValid
-    # region
-    def isCacheValid(self, image_url, cache_filename):
-        if not os.path.exists(cache_filename):
-            print("CACHE NOT FOUND: " + cache_filename)  # Print the cache filename
-            return False
-
-        # Check the file modification time
-        cache_mtime = os.path.getmtime(cache_filename)
-        current_time = time.time()
-        if current_time - cache_mtime >= self.CACHE_EXPIRY:
-            print("CACHE EXPIRED: " + cache_filename)  # Print the cache filename
-            return False
-
-        # Check the ETag header in the response
-        try:
-            response = requests.head(image_url)
-            if 'ETag' in response.headers:
-                etag = response.headers['ETag'].strip('"')  # Remove surrounding double quotes
-                cache_etag = self.getCacheETag(cache_filename).strip('"')  # Remove surrounding double quotes from cache ETag
-                if etag != cache_etag:
-                    print("ETAG MISMATCH: " + cache_filename)  # Print the cache filename
-                    print("EXPECTED ETAG: " + cache_etag)  # Print the expected ETag value
-                    print("RECEIVED ETAG: " + etag)  # Print the received ETag value
-                    return False
-                else:
-                    # ETag matches, cache is still valid
-                    return True
-            else:
-                # ETag header not found, cache is invalid
-                return False
-        except:
-            pass
-
-        # ETag validation failed, cache is invalid
-        return False
     # endregion
 
     # getCacheETag
