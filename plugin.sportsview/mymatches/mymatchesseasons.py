@@ -770,6 +770,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         # endregion
 
         # Create a button control for the event
+        # region
         self.focused_event_texture_path = self.temp_event_folder + "focused_" + event_id + ".png"
         nofocus_event_texture_path = self.temp_event_folder + event_id + ".png"
 
@@ -789,15 +790,18 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         self.event_buttons.append(event_button)  # Keep track of buttons
 
         button_id = event_button.getId()
-        
+        # endregion
+
         # Associate additional information with the ControlButton
+        # region
         self.event_button_data[button_id] = {
             "team01NAME": team01,
             "team02NAME": team02,
             "match_path": match,
             "event_id": event_id
         }
-        
+        # endregion
+
         # Call the second_display_bar method
         self.second_display_bar()
     # endregion
