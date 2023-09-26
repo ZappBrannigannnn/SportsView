@@ -1353,7 +1353,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     def scrollDownEvent(self):
 
         for button in self.event_buttons:
-            new_y_position = button.getY() + int(self.event_button_height + 3)
+            new_y_position = button.getY() + int(self.event_button_height + 10)
             button.setPosition(button.getX(), new_y_position)
 
         # Call visible_update after scrolling down
