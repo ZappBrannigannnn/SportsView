@@ -298,10 +298,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # IF THEY MATCH START A LOOP FOR EACH MATCH DISPLAY_THE_CACHED_PAGE_EVENT_BUTTON
     # IF THEY DON'T MATCH WRITE A NEW SAVED AVAILABLE MATCHES FILE AND START THE GET_ALL_LEAGUES METHOD (NOT CACHED FORK)
     # region
-    def new_or_cached_event_buttons(self, available_matches):
-        print("NEW OR CACHED EVENT BUTTONS RUNNING")
-        # NEW OR CACHED EVENT BUTTONS
-        
+    def new_or_cached_event_buttons(self, available_matches):      
         # get the saved available matches and define some preliminarty stuff
         # region
         saved_available_matches_folder = os.path.join(f"special://home/temp/sportsview/mymatches_saved_available_matches/{self.sportname}/{self.league_name}/")
@@ -319,7 +316,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                 saved_available_matches = file.read()
         else:
             # Call the get_all_leagues method
-            print("Error reading saved_available_matches file or it doesn't exist. Going to call get_all_leagues method to start the process of making new event buttons.")
+            print("Error reading saved_available_matches file or it doesn't exist. Calling get_all_leagues method to start the process of making new event buttons.")
             # Write the saved_available_matches to the saved_available_matches_path
             # open the saved_available_matches_path for writing
             with open(saved_available_matches_path, "w", encoding="utf-8") as file:
@@ -340,7 +337,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         # Check if the saved_available_matches are the same as the available_matches (CHECKING IF THERE ARE CHANGES TO THE FOLDER CONTENTS)
         # region
         if str(available_matches) == str(saved_available_matches):
-            print("available_matches and saved_available_matches are the same")
             # CODE TO USE THE CACHED EVENT BUTTONS
             # Call the display_event_buttons method
             for event in available_matches:
@@ -355,7 +351,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         # region
         else:
             # Call the get_all_leagues method
-            print("available_matches and saved_available_matches are different")
             self.get_all_leagues()
 
             # Write the saved_available_matches to the saved_available_matches_path
@@ -380,7 +375,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Get all leagues
     # region
     def get_all_leagues(self):
-        print("GET ALL LEAGUES CALLED")
         url = f'https://www.thesportsdb.com/api/v1/json/{self.apikey}/all_leagues.php'
         response = requests.get(url)
         if response.status_code == 200:
@@ -399,7 +393,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Get correct league id by checking if the combination of my sport and league name matches a combination in the list of leagues
     # region
     def get_correct_league_id(self, leagues):
-        print("GET CORRECT LEAGUE ID CALLED")
         target_league = None
 
         for league in leagues: # searching each league in leagues
@@ -423,7 +416,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Get all events in league by season
     # region
     def get_all_events_in_season(self, league_id):
-        print("GET ALL EVENTS IN SEASON CALLED")
         # Extract the league id from the league_id league objectc
         id_league = league_id['idLeague']  # Using dictionary indexing
  
@@ -445,7 +437,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Find which namehelper you need and call it.
     # region
     def call_dynamic_namehelper(self, events, id_league):
-        print("CALLING DYNAMIC NAMEHELPER")
         
         # Construct the module name dynamically
         module_name = f"leaguenamehelper.{self.sportname.replace(' ', '_')}.{self.league_name.replace(' ', '_')}_namehelper"
@@ -474,7 +465,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # RECEIVE event data from specific league name helper
     # region
     def receive_event_data(self, team01, team02, round_number, available_matches, events, event_id, event_data, my_matches_seasons_instance, match, VERSUS, event_label, event_thumbnail):
-        print("RECEIVE EVENT DATA RUNNING")
 
         self.sportname = my_matches_seasons_instance.sportname
         self.league_name = my_matches_seasons_instance.league_name
@@ -653,7 +643,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Display event button called from 
     # region
     def display_event_button(self, event_label, event_thumbnail, event_data, y_position, team01, team02, match, event_id, available_matches):
-        print("DISPLAY EVENT BUTTON RUNNING")
 
         # Create a button control for the event
         self.focused_event_texture_path = self.temp_event_folder + "focused_" + event_id + ".png"
@@ -684,7 +673,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             "match_path": str(match),
             "event_id": str(event_id)
         }
-        print("SELF.EVENT_BUTTON_DATAaaaaaaaaa: " + str(self.event_button_data))
         
         # Get and name associated info folder and file
         saved_associated_info_folder = os.path.join(f"special://home/temp/sportsview/mymatches_saved_available_matches/{self.sportname}/{self.league_name}/")
@@ -713,14 +701,12 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # Display_cached_page_event_button called from new_or_cached_event_button
     # region
     def display_cached_page_event_button(self, event):
-        print("DISPLAY CACHED PAGE EVENT BUTTON RUNNING")
         # Calculate y position for the event button
         # region
         if self.event_buttons:
             last_event_button = self.event_buttons[-1]
             y_position = last_event_button.getY() + last_event_button.getHeight() + 10  # You can adjust the spacing (10 in this case)
         else:
-            print("no event buttons")
             y_position = 0
             pass
         # endregion
@@ -742,59 +728,48 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         match = ""
         event_id = ""
         match_found = False
-        print("EVENTtttttttttttttt", event)
         # endregion
 
         # Get the associated info from the saved_associated_info_path
         # region
         # Look through the saved_associated_info_path and find our current event in the "Match:"
         if os.path.exists(saved_associated_info_path):
-            print("Reading saved_associated_info_path")
             with open(saved_associated_info_path, "r", encoding="utf-8") as file:
                 for line in file:
                     # If the line starts with "Match:" followed by the event ID
                     if line.startswith(f"Match:{event}"):
-                        print("LINE", line)
                         match_from_saved_file = re.search(r'Match:(.*?),', line).group(1).strip()
                         # Now match_from_saved_file should contain everything after "Match:" and before the first comma ","
-                        print("MATCH FROM SAVED FILE", match_from_saved_file)
                         if(event == match_from_saved_file):
-                            print("Event and match_from_saved_file match")
 
                             # Create a dictionary to store match data
                             if "Team01NAME:" in line:
                                 team01 = re.search(r'Team01NAME:(.*?),', line).group(1).strip()
-                                print("Team01 dfgsdfgsdfge56345tysdgfsdfg:", team01)
 
                             if "Team02NAME:" in line:
                                 team02 = re.search(r'Team02NAME:(.*?),', line).group(1).strip()
-                                print("Team02 dfgsdfgsdfge56345tysdgfsdfg:", team02)
 
                             if "match_path:" in line:
                                 match = re.search(r'match_path:(.*?),', line).group(1).strip()  
-                                print("match_path dfgsdfgsdfge56345tysdgfsdfg:", match)
 
                             # Extract the event_id separately
                             event_id_match = re.search(r'event_id:(\d+)', line)
                             if event_id_match:
                                 event_id = event_id_match.group(1)
-                                print("event_id sdghsdfgsdfgsdfgsdsg:", event_id)
                         
                         match_found = True  # Set the flag to True when the match is found
                         break  # Exit the loop when the match is found
 
         if not match_found:
-            print("Error reading saved_associated_info_path or it doesn't exist")
+            print("Error reading saved_associated_info_path or it doesn't exist. Calling get_all_leagues method to start the process of making new event buttons.(222)")
             # Call the get_all_leagues method
             self.get_all_leagues()
             raise StopIteration  # Raise an exception to stop the loop
         else:
-            print("Match found, processing data...")
+            pass
         # endregion
 
         # Create a button control for the event
-        print("Create a button control for the event")
-        print("EVENT----ID", event_id)
         self.focused_event_texture_path = self.temp_event_folder + "focused_" + event_id + ".png"
         nofocus_event_texture_path = self.temp_event_folder + event_id + ".png"
 
@@ -882,12 +857,6 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Create the hometeam_background for the event (poster else thumb else banner)
         # region
-        print("Team01NAME", team01NAME)
-        print("Team02NAME", team02NAME)
-        print("MATCH PATH", match_path)
-        print("EVENT ID", event_id)
-
-
         if team01NAME != "None" and team01NAME != None:
             print("USING BACKGROUND")
             hometeam_background = xbmcgui.ControlImage(
