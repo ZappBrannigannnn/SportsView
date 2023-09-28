@@ -56,12 +56,35 @@ class MySportsButtons:
     # GET THE AVAILABLE SPORTS IN THE SPORTS FOLDER
     # region
     def get_sports_folders(self):
+
         addon = xbmcaddon.Addon()
         sports_folder_path = addon.getSetting('setting1')
+        print("SPORTS FOLDER PATH:", sports_folder_path)
 
-        if os.path.exists(sports_folder_path):
-            sports_folders = [folder for folder in os.listdir(sports_folder_path) if os.path.isdir(os.path.join(sports_folder_path, folder))]
-            return sports_folders
+        if sports_folder_path.startswith("smb://"):
+            try:
+                # Check if the SMB share exists using xbmcvfs.
+                if xbmcvfs.exists(sports_folder_path):
+                    print("SMB PATH EXISTS")
+                    sports_items = xbmcvfs.listdir(sports_folder_path)
+                    # Flatten the list and remove the extra nesting
+                    sports_folders = [item for sublist in sports_items for item in sublist if not item.startswith(".")]
+                    print("SPORTS FOLDERS:", sports_folders)
+                    return sports_folders
+                else:
+                    print("SMB PATH DOES NOT EXIST")
+            except Exception as e:
+                print("Error:", str(e))
+                
+        else:
+            # Assuming sports_folder_path is a local file system path
+            if os.path.exists(sports_folder_path):
+                print("LOCAL PATH EXISTS")
+                sports_folders = [folder for folder in os.listdir(sports_folder_path) if os.path.isdir(os.path.join(sports_folder_path, folder))]
+                print("SPORTS FOLDERS:", sports_folders)
+                return sports_folders
+            else:
+                print("LOCAL PATH DOES NOT EXIST")
 
         return []
     # endregion
@@ -151,6 +174,7 @@ class MySportsButtons:
 
         # Get the available sports folders
         sports_folders = self.get_sports_folders()
+        print("SPORTS FOLDERS:", sports_folders)
 
         # CROSS REFERENCE sports_data with sports_folders = available_sports
         self.available_sports = []
@@ -200,7 +224,7 @@ class MySportsButtons:
             unfocused_draw = ImageDraw.Draw(unfocused_button_image)
 
             # Choose a font (You can replace this with the path to your custom font file)
-            custom_font_path = "special://home/addons/plugin.sportview/resources/fonts/ariblk.ttf"
+            custom_font_path = "special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf"
             desired_font_size = 40
             font = ImageFont.truetype(custom_font_path, desired_font_size)
 
