@@ -224,7 +224,7 @@ class MySportsButtons:
             unfocused_draw = ImageDraw.Draw(unfocused_button_image)
 
             # Choose a font (You can replace this with the path to your custom font file)
-            custom_font_path = "special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf"
+            custom_font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
             desired_font_size = 40
             font = ImageFont.truetype(custom_font_path, desired_font_size)
 
@@ -382,32 +382,37 @@ class MySportsButtons:
                     self.update_displayed_image()  # Recursive call to try displaying the fetched image
 
             else:
+
+                # Specify the temporary directory
+                temp_dir = xbmcvfs.translatePath("special://temp")
+
                 try:
                     # Fetch the image from the URL
                     image_data = urllib.request.urlopen(sport_image_url).read()
 
-                    # Create a temporary file to save the image from the API response
-                    image_temp_file = tempfile.NamedTemporaryFile(suffix=".png", delete=False)
-                    image_temp_file.write(image_data)
-                    image_temp_file.close()
+                    # Create a temporary file in the specified directory
+                    temp_file_path = os.path.join(temp_dir, "temp_image.png")
+                    temp_file_path_str = str(temp_file_path)
 
-                    # Create a ControlImage for displaying the fetched image
-                    image_control = xbmcgui.ControlImage(
-                        int(self.window_width / 2),
-                        self.buttons_start_y,
-                        self.image_width,
-                        self.image_height,
-                        image_temp_file.name
-                    )
+                    # Write the image data to the temporary file
+                    with open(temp_file_path, 'rb') as image_file:
+                        # Create a ControlImage for displaying the fetched image
+                        image_control = xbmcgui.ControlImage(
+                            int(self.window_width / 2),
+                            self.buttons_start_y,
+                            self.image_width,
+                            self.image_height,
+                            temp_file_path_str
+                        )
 
-                    # Add the ControlImage to the Kodi window (replace 100, 100 with the desired position on the window)
-                    self.parent_window.addControl(image_control)
+                        # Add the ControlImage to the Kodi window
+                        self.parent_window.addControl(image_control)
 
-                    # Call setVisible(True) to make the image control visible on the window
-                    image_control.setVisible(True)
+                        # Call setVisible(True) to make the image control visible on the window
+                        image_control.setVisible(True)
 
-                    # Cache the fetched image
-                    self.download_and_cache_image(sport_image_url, sport_name)
+                        # Cache the fetched image
+                        self.download_and_cache_image(sport_image_url, sport_name)
 
                 except Exception as e:
                     print("Error fetching image from API:", e)
