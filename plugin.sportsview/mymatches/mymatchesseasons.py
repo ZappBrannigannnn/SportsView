@@ -92,17 +92,23 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # What season folders are there?
     # region
     def seasons_in_league_folder(self):
-
         addon = xbmcaddon.Addon()
         sports_folder_path = addon.getSetting('setting1')
 
-        sport_folder_path = os.path.join(sports_folder_path, self.sportname)
-
-        league_folder_path = os.path.join(sport_folder_path, self.league_name)
-        
-        self.seasons_in_folder = [folder for folder in os.listdir(league_folder_path) if os.path.isdir(os.path.join(league_folder_path, folder))]
-
-        return self.seasons_in_folder
+        try:
+            # Check if the SMB share exists using xbmcvfs.
+            if xbmcvfs.exists(sports_folder_path):
+                sport_folder_path = os.path.join(sports_folder_path, self.sportname)
+                league_folder_path = os.path.join(sport_folder_path, self.league_name)
+                try:
+                    self.seasons_in_folder = xbmcvfs.listdir(league_folder_path)[0]
+                except Exception as e:
+                    print("Error listing seasons:", str(e))
+                    self.seasons_in_folder = []
+                print("SELF.SEASONS_IN_FOLDER", self.seasons_in_folder)
+                return self.seasons_in_folder
+        except Exception as e:
+            print("Error:", str(e))
     # endregion
 
     # Display a vertical bar spanning from top to bottom next to season buttons

@@ -48,16 +48,27 @@ class MyLeaguesButtons(xbmcgui.WindowXML):
     # What league folders are there?
     # region
     def leagues_in_sport_folder(self):
-
         addon = xbmcaddon.Addon()
         sports_folder_path = addon.getSetting('setting1')
 
-        sport_folder_path = os.path.join(sports_folder_path, self.sportname)
-        league_folders = [folder for folder in os.listdir(sport_folder_path) if os.path.isdir(os.path.join(sport_folder_path, folder))]
+        try:
+            # Check if the SMB share exists using xbmcvfs.
+            if xbmcvfs.exists(sports_folder_path):
+                sport_folder_path = os.path.join(sports_folder_path, self.sportname)
 
-        self.available_leagues = league_folders
+                try:
+                    league_folders = xbmcvfs.listdir(sport_folder_path)[0]
+                except Exception as e:
+                    print("Error listing league folders:", str(e))
+                    league_folders = []  # Set a default value if an error occurs
 
-        return league_folders
+                self.available_leagues = league_folders
+                return league_folders  # Return the list of league folders
+        except Exception as e:
+            print("Error:", str(e))
+
+        # Return an empty list if no folders were found or if an exception occurred
+        return []
     # endregion
 
 # endregion
