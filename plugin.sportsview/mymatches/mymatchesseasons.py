@@ -620,7 +620,15 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
             # You can also draw text or shapes on the placeholder image if desired
             draw = ImageDraw.Draw(placeholder_image)
-            text = match
+
+            print("MATCH before:", match)
+            addon = xbmcaddon.Addon()
+            sports_folder_path = addon.getSetting('setting1')
+            # remove everything from before self.focused_season_name in match
+            matchnew = match.replace(sports_folder_path + self.sportname + "/" + self.league_name + "/" + self.focused_season_name + "/", "")
+            print("MATCH after:", matchnew)
+
+            text = matchnew
             text_color = (0, 0, 0)  # Set the text color (black in this example)
 
             # Define a font and size
