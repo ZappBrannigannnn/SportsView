@@ -187,9 +187,9 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             unfocused_draw = ImageDraw.Draw(unfocused_button_image)
 
             # Choose a font (You can replace this with the path to your custom font file)
-            custom_font_path = "special://home/addons/plugin.sportview/resources/fonts/ariblk.ttf"
-                    # Initialize font size based on season text length
-
+            custom_font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
+            
+            # Initialize font size based on season text length
             if len(season) == 4:
                 desired_font_size = 50
             elif len(season) == 9:
@@ -271,6 +271,9 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # region
     def matches_in_season(self):
 
+        # Define a list of common video file extensions
+        video_extensions = ['.mp4', '.avi', '.mkv', '.mov', '.wmv', '.flv', '.webm']
+
         # Get the currently focused season index
         focused_season_index = self.focused_season_index
 
@@ -280,12 +283,47 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
             addon = xbmcaddon.Addon()
             sports_folder_path = addon.getSetting('setting1')
+
             sport_folder_path = os.path.join(sports_folder_path, self.sportname)
             league_folder_path = os.path.join(sport_folder_path, self.league_name)
             season_folder_path = os.path.join(league_folder_path, self.focused_season_name)
 
             # List available matches in the focused season folder
-            self.available_matches = [match for match in os.listdir(season_folder_path)]
+            try:
+                file_list = []
+                dirs, _ = xbmcvfs.listdir(season_folder_path)  # We don't need the list of files here
+
+                print("DIRS", dirs)
+
+                # Process files directly in season_folder_path
+                for directory in dirs:
+                    directory_name = directory
+                    directory_path = os.path.join(season_folder_path, directory_name)
+                    subfolder_files = xbmcvfs.listdir(directory_path)[1]
+                    print("Files in subdirectory '{}':".format(directory_name))
+                    print("Subfolder Files:", subfolder_files)
+
+                    # Filter and add only files with common video extensions
+                    for file in subfolder_files:
+                        file_name = file
+                        file_extension = os.path.splitext(file_name)[1].lower()
+                        if file_extension in video_extensions:
+                            # Include the file extension in the final path
+                            file_list.append(os.path.join(directory_path, file_name))
+
+                # Process files in season_folder_path itself (not within subdirectories)
+                for file in xbmcvfs.listdir(season_folder_path)[1]:
+                    file_name = file
+                    file_extension = os.path.splitext(file_name)[1].lower()
+                    if file_extension in video_extensions:
+                        # Include the file extension in the final path
+                        file_list.append(os.path.join(season_folder_path, file_name))
+
+                self.available_matches = file_list
+                               
+            except Exception as e:
+                print("Error listing matches folders:", str(e))
+                self.available_matches = []  # Set a default value if an error occurs                
 
             # Define a custom sorting function to extract the round number from the filenames
             def extract_round_number(match):
@@ -321,7 +359,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             print("No season focused or invalid focused index.")
         
         # Call the new_or_cached_event_buttons method 
-        self.new_or_cached_event_buttons(self.available_matches)
+        self.new_or_cached_event_buttons()
 
     # endregion
 
@@ -330,7 +368,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
     # IF THEY MATCH START A LOOP FOR EACH MATCH DISPLAY_THE_CACHED_PAGE_EVENT_BUTTON
     # IF THEY DON'T MATCH WRITE A NEW SAVED AVAILABLE MATCHES FILE AND START THE GET_ALL_LEAGUES METHOD (NOT CACHED FORK)
     # region
-    def new_or_cached_event_buttons(self, available_matches):      
+    def new_or_cached_event_buttons(self):      
         # get the saved available matches and define some preliminarty stuff
         # region
         saved_available_matches_folder = os.path.join(f"special://home/temp/sportsview/mymatches_saved_available_matches/{self.sportname}/{self.league_name}/")
@@ -352,26 +390,25 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             # Write the saved_available_matches to the saved_available_matches_path
             # open the saved_available_matches_path for writing
             with open(saved_available_matches_path, "w", encoding="utf-8") as file:
-                # Write the opening square bracket
-                file.write("[")
-                # Write each match to the file
-                for i, match in enumerate(available_matches):
-                    if i > 0:
-                        file.write(", ")  # Add a comma and space for all items except the first
-                    file.write("'" + match + "'")
-                # Write the closing square bracket
-                file.write("]")
+                # Write the damn thing
+                file.write(str(self.available_matches))
 
             self.get_all_leagues()
             return
         # endregion
 
-        # Check if the saved_available_matches are the same as the available_matches (CHECKING IF THERE ARE CHANGES TO THE FOLDER CONTENTS)
+        # Check if the saved_available_matches are the same as the self.available_matches (CHECKING IF THERE ARE CHANGES TO THE FOLDER CONTENTS)
         # region
-        if str(available_matches) == str(saved_available_matches):
+
+        print("THESE ARE SUPPOSED TO MATCH:", "AVAILABLE MATCHES", str(self.available_matches), "SAVED AVAILABLE MATCHES", str(saved_available_matches))
+
+
+
+        if str(self.available_matches) == str(saved_available_matches):
+            print("AVAILABLE MATCHES ARE THE SAME AS THE SAVED AVAILABLE MATCHES")
             # CODE TO USE THE CACHED EVENT BUTTONS
             # Call the display_event_buttons method
-            for event in available_matches:
+            for event in self.available_matches:
                 try:
                     self.display_cached_page_event_button(event)
                 except StopIteration:
@@ -379,24 +416,25 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
                     break
         # endregion
 
-        # If the saved_available_matches and available_matches don't match
+        # If the saved_available_matches and self.available_matches don't match
         # region
         else:
+            print("AVAILABLE MATCHES ARE DIFFERENT FROM THE SAVED AVAILABLE MATCHES")
             # Call the get_all_leagues method
             self.get_all_leagues()
 
             # Write the saved_available_matches to the saved_available_matches_path
             # open the saved_available_matches_path for writing
+            print("SELF.AVAILABLE_MATCHES:", self.available_matches)
             with open(saved_available_matches_path, "w", encoding="utf-8") as file:
-                # Write the opening square bracket
-                file.write("[")
-                # Write each match to the file
-                for i, match in enumerate(available_matches):
-                    if i > 0:
-                        file.write(", ")  # Add a comma and space for all items except the first
-                    file.write("'" + match + "'")
-                # Write the closing square bracket
-                file.write("]")
+                # Write the damn thing
+                file.write(str(self.available_matches))
+
+
+
+
+
+
         # endregion
     # endregion
     
@@ -472,6 +510,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
         
         # Construct the module name dynamically
         module_name = f"leaguenamehelper.{self.sportname.replace(' ', '_')}.{self.league_name.replace(' ', '_')}_namehelper"
+        print("MODULE NAMEeeeeeeeeeeee: " + module_name)
         # Import the module dynamically
         module = importlib.import_module(module_name)
         
@@ -566,7 +605,8 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         # Define the font size and load the custom font
         font_size = 100  # Adjust the font size as needed
-        font_path = os.path.join('special://home/addons/plugin.sportview/resources/fonts/ariblk.ttf')
+        font_path = xbmcvfs.translatePath('special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf')
+
         font = ImageFont.truetype(font_path, font_size)
 
         # Check if event_thumbnail is empty
@@ -582,12 +622,14 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
             draw = ImageDraw.Draw(placeholder_image)
             text = match
             text_color = (0, 0, 0)  # Set the text color (black in this example)
+
             # Define a font and size
-            font = ImageFont.truetype("special://home/addons/plugin.sportview/resources/fonts/ariblk.ttf", size=160)  # Replace with the path to your font file and desired size
+            custom_font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
+            desired_font_size = 160
+            font = ImageFont.truetype(custom_font_path, desired_font_size)
+
             # Calculate the position to center the text
             text_width, text_height = draw.textsize(text, font)
-            #x = (width - text_width) / 2
-            #y = (height - text_height) / 2
 
             # Define the maximum width for word wrapping
             max_width = 15  # Adjust to your desired maximum width
@@ -1421,7 +1463,7 @@ class MyMatchesSeasons(xbmcgui.WindowXML):
 
         addon = xbmcaddon.Addon()
         sports_folder_path = addon.getSetting('setting1')
-        video_path = sports_folder_path + self.sportname + '/' + self.league_name + '/' + self.focused_season_name + '/' + match_file
+        video_path = match_file
 
         # Play the video in the fullscreen dialog
         xbmc.Player().play(video_path)

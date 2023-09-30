@@ -10,7 +10,7 @@ from mymatches.mymatchesseasons import MyMatchesSeasons
 import xbmcvfs
 import os
 import shutil
-from dateutil import parser
+#from dateutil import parser
 # endregion
 
 # Formula1Helper class
@@ -44,7 +44,7 @@ class Formula1Helper:
     # region
     # region (NO CHANGES REQUIRED)
     def get_team_ids_and_round(self, available_matches, events):
-        # Iterate through the team mapping to find team IDs for the current match
+        # Iterate through the available matches to find team IDs for the current match
         for match in available_matches:
             team01 = None  # Initialize a placeholder for the first team's ID
             team02 = None  # Initialize a placeholder for the second team's ID
@@ -54,7 +54,7 @@ class Formula1Helper:
             # Get the race type
             # region
             race_type = None
-            RACE = re.search(r"RACE|Grand Prix", match)
+            RACE = re.search(r"RACE|Race|race|Grand Prix|GRAND PRIX|grand prix|grand.prix", match)
             if RACE is not None:
                 race_type = "RACE"
             else:
@@ -78,11 +78,39 @@ class Formula1Helper:
                                 if SPRINT is not None:
                                     race_type = "SPRINT"                                
                                 else:
+                                    TEST_DAY_1_MORNING = re.search(r"Test Day 1 Morning|Test.Day.1.Morning|test.day.1.morning", match)
+                                    if TEST_DAY_1_MORNING is not None:
+                                        race_type = "TEST_DAY_1_MORNING"
+                                    else:
+                                        TEST_DAY_1_AFTERNOON = re.search(r"Test Day 1 Afternoon|Test.Day.1.Afternoon|test.day.2.afternoon", match)
+                                        if TEST_DAY_1_AFTERNOON is not None:
+                                            race_type = "TEST_DAY_1_AFTERNOON"
+                                        else:
+                                            TEST_DAY_2_MORNING = re.search(r"Test Day 2 Morning|Test.Day.2.Morning|test.day.2.morning", match)
+                                            if TEST_DAY_2_MORNING is not None:
+                                                race_type = "TEST_DAY_2_MORNING"
+                                            else:
+                                                TEST_DAY_2_AFTERNOON = re.search(r"Test Day 2 Afternoon|Test.Day.2.Afternoon|test.day.2.afternoon", match)
+                                                if TEST_DAY_2_AFTERNOON is not None:
+                                                    race_type = "TEST_DAY_2_AFTERNOON"
+                                                else:
+                                                    TEST_DAY_3_MORNING = re.search(r"Test Day 3 Morning|Test.Day.3.Morning|test.day.3.morning", match)
+                                                    if TEST_DAY_3_MORNING is not None:
+                                                        race_type = "TEST_DAY_3_MORNING"
+                                                    else:
+                                                        TEST_DAY_3_AFTERNOON = re.search(r"Test Day 3 Afternoon|Test.Day.3.Afternoon|test.day.3.afternoon", match)
+                                                        if TEST_DAY_3_AFTERNOON is not None:
+                                                            race_type = "TEST_DAY_3_AFTERNOON"
+                                                        else:
+                                                            print("Race type not found in match:", match)
+
                                     print("Race type not found in match:", match)
             # endregion
 
+            print("Race type:", race_type)
+
             round_number_with_words = None
-            round_match = re.search(r"Round (\d+)|Round(\d+)|R\d{2}", match)
+            round_match = re.search(r"Round (\d+)|Round(\d+)|Round.(\d+)|R\d{2}", match)
             if round_match:
                 round_number_with_words = (round_match.group(0))
                 round_number = int(re.sub(r'\D|^0+', '', round_number_with_words))
@@ -132,7 +160,31 @@ class Formula1Helper:
                                 if RACE is not None:
                                     event_type = "RACE"
                                 else:
-                                    print("Race type not found in match:", event_type_full)
+                                    TEST_DAY_1_MORNING = re.search(r"Test Day 1 Morning", event_type_full)
+                                    if TEST_DAY_1_MORNING is not None:
+                                        event_type = "TEST_DAY_1_MORNING"
+                                    else:
+                                        TEST_DAY_1_AFTERNOON = re.search(r"Test Day 1 Afternoon", event_type_full)
+                                        if TEST_DAY_1_AFTERNOON is not None:
+                                            event_type = "TEST_DAY_1_AFTERNOON"
+                                        else:
+                                            TEST_DAY_2_MORNING = re.search(r"Test Day 2 Morning", event_type_full)
+                                            if TEST_DAY_2_MORNING is not None:
+                                                event_type = "TEST_DAY_2_MORNING"
+                                            else:
+                                                TEST_DAY_2_AFTERNOON = re.search(r"Test Day 2 Afternoon", event_type_full)
+                                                if TEST_DAY_2_AFTERNOON is not None:
+                                                    event_type = "TEST_DAY_2_AFTERNOON"
+                                                else:
+                                                    TEST_DAY_3_MORNING = re.search(r"Test Day 3 Morning", event_type_full)
+                                                    if TEST_DAY_3_MORNING is not None:
+                                                        event_type = "TEST_DAY_3_MORNING"
+                                                    else:
+                                                        TEST_DAY_3_AFTERNOON = re.search(r"Test Day 3 Afternoon", event_type_full)
+                                                        if TEST_DAY_3_AFTERNOON is not None:
+                                                            event_type = "TEST_DAY_3_AFTERNOON"
+                                                        else:
+                                                            print("Race type not found in match:", event_type_full)
 
             if race_type == event_type:
 
@@ -228,6 +280,8 @@ class Formula1Helper:
 
         # Sports that requires the VERSUS Bar to be displayed
         VERSUS = "NO"
+
+        round_number = ""
 
         # Create an instance of MyMatchesSeasons class
         cwd = xbmcaddon.Addon().getAddonInfo('path')

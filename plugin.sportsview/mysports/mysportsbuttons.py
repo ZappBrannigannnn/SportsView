@@ -59,33 +59,21 @@ class MySportsButtons:
 
         addon = xbmcaddon.Addon()
         sports_folder_path = addon.getSetting('setting1')
-        print("SPORTS FOLDER PATH:", sports_folder_path)
 
-        if sports_folder_path.startswith("smb://"):
-            try:
-                # Check if the SMB share exists using xbmcvfs.
-                if xbmcvfs.exists(sports_folder_path):
-                    print("SMB PATH EXISTS")
-                    sports_items = xbmcvfs.listdir(sports_folder_path)
-                    # Flatten the list and remove the extra nesting
-                    sports_folders = [item for sublist in sports_items for item in sublist if not item.startswith(".")]
-                    print("SPORTS FOLDERS:", sports_folders)
-                    return sports_folders
-                else:
-                    print("SMB PATH DOES NOT EXIST")
-            except Exception as e:
-                print("Error:", str(e))
-                
-        else:
-            # Assuming sports_folder_path is a local file system path
-            if os.path.exists(sports_folder_path):
-                print("LOCAL PATH EXISTS")
-                sports_folders = [folder for folder in os.listdir(sports_folder_path) if os.path.isdir(os.path.join(sports_folder_path, folder))]
+        try:
+            # Check if the SMB share exists using xbmcvfs.
+            if xbmcvfs.exists(sports_folder_path):
+                print("PATH EXISTS")
+                sports_items = xbmcvfs.listdir(sports_folder_path)
+                # Flatten the list and remove the extra nesting
+                sports_folders = [item for sublist in sports_items for item in sublist if not item.startswith(".")]
                 print("SPORTS FOLDERS:", sports_folders)
                 return sports_folders
             else:
-                print("LOCAL PATH DOES NOT EXIST")
-
+                print("PATH DOES NOT EXIST")
+        except Exception as e:
+            print("Error:", str(e))
+                
         return []
     # endregion
 

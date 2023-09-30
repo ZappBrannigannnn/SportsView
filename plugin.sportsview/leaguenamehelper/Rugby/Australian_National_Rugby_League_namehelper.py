@@ -10,7 +10,7 @@ from mymatches.mymatchesseasons import MyMatchesSeasons
 import xbmcvfs
 import os
 import shutil
-from dateutil import parser
+#from dateutil import parser
 # endregion
 
 # AustralianNationalRugbyLeagueHelper class
@@ -176,6 +176,7 @@ class AustralianNationalRugbyLeagueHelper:
         
         # Send an HTTP GET request to the event URL
         response = requests.get(event_url)
+
         # Parse the response as JSON
         data = response.json()
 
