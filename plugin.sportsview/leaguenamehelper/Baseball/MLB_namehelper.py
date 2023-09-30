@@ -124,42 +124,28 @@ class MLBHelper:
     # get_event_id method
     # region
     def get_event_id(self, team01, team02, round_number, available_matches, events, match):
-
-        # Convert team IDs to strings for accurate comparison
-        # region
         team01_str = str(team01)
         team02_str = str(team02)
-        # endregion
-
-        # Loop through each event in the events list
+        event_id = None
+        
+        parsed_round_date_time = parser.parse(round_number, dayfirst=True)
+        
         for event in events:
             event_home_team = event["idHomeTeam"]
             event_away_team = event["idAwayTeam"]
             event_round_str = event["dateEvent"]
-
-            # Check if either home and away teams match team01 and team02, or vice versa
+            
             if (event_home_team == team01_str and event_away_team == team02_str) or (event_home_team == team02_str and event_away_team == team01_str):
-
+                event_round = parser.parse(event_round_str).date()
                 
-                try:
-                    # Parse the round_number into a datetime object
-                    parsed_round_date_time = parser.parse(round_number, dayfirst=True)  # Set dayfirst=True for DD-MM-YYYY format
-                    parsed_round = parsed_round_date_time.date
-
-                    # Convert event_round_str to a datetime object
-                    event_round = parser.parse(event_round_str)
-
-                    # Compare only dates, ignoring the time component
-                    if parsed_round() == event_round.date():
-                        event_id = event["idEvent"]
-                        print(f"Match found for round {parsed_round}")
-                        break
-                except ValueError:
-                    print(f"Invalid date format: {round_number}")
-
-        else:
-            # If loop completes without a match, log a message
-            print("No matching event found for teams and round.")
+                if parsed_round_date_time.date() == event_round:
+                    event_id = event["idEvent"]
+                    print(f"Match found for round {parsed_round_date_time.date()}")
+                    break
+                else:
+                    print("FILENAME ROUND DOESN'T MATCH EVENT DATE")
+            else:
+                print("FILENAME TEAMS DON'T MATCH EVENT TEAMS")
 
         # Call the get_event_info method
         if event_id:
