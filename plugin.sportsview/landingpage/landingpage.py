@@ -1,6 +1,8 @@
 import xbmcgui
 import xbmc
 
+from recent_widget import recent_widget
+
 class LandingPageWindow(xbmcgui.WindowXML):
     def __init__(self, window_manager, *args, **kwargs):
         xbmcgui.WindowXML.__init__(self, *args, **kwargs)
@@ -10,6 +12,10 @@ class LandingPageWindow(xbmcgui.WindowXML):
         current_window = xbmcgui.getCurrentWindowId()  
         allsports_focus = self.getControl(1003)  # Get the label control by its ID
         self.setFocus(allsports_focus)  # Set the focus to the label control
+
+        recent_widget.show_custom_dialog()
+
+
 
     def onClick(self, controlId):
         from window_manager import WindowManager
