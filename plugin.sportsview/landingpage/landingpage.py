@@ -1,8 +1,6 @@
 import xbmcgui
 import xbmc
 
-from recent_widget import recent_widget
-
 class LandingPageWindow(xbmcgui.WindowXML):
     def __init__(self, window_manager, *args, **kwargs):
         xbmcgui.WindowXML.__init__(self, *args, **kwargs)
