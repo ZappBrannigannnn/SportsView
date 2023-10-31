@@ -84,28 +84,14 @@ class MySportsButtons:
         os.makedirs(cache_folder, exist_ok=True)
 
         # Create a filename from the sport name
-        filename = f"{sport_name.lower().replace(' ', '_')}.png"
+        filename = f"{sport_name.lower().replace(' ', '_', 'unfocused')}.png"
         cache_filepath = os.path.join(cache_folder, filename)
-        etag_filepath = os.path.join(cache_folder, f"{filename}.etag")
 
         # Check if the cached file and ETag file exist
-        if os.path.exists(cache_filepath) and os.path.exists(etag_filepath):
+        if os.path.exists(cache_filepath):
             try:
                 remote_response = urllib.request.urlopen(image_url)
-                remote_etag = remote_response.headers.get("ETag", "")
                 remote_response.close()
-
-                # Read the cached ETag from the ETag file
-                with open(etag_filepath, "r") as etag_file:
-                    cached_etag = etag_file.read().strip()
-
-                # Compare the cached ETag with the remote ETag
-                if cached_etag == remote_etag:
-                    print("CACHED IMAGE FOUND")
-                    return True
-                else:
-                    print("CACHED IMAGE NOT FOUND 1")
-                    return False
 
             except Exception as e:
                 print("Error checking cache:", e)
