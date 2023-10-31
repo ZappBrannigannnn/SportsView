@@ -104,7 +104,7 @@ class MySportsButtons:
                     print("CACHED IMAGE FOUND")
                     return True
                 else:
-                    print("CACHED IMAGE NOT FOUND")
+                    print("CACHED IMAGE NOT FOUND 1")
                     return False
 
             except Exception as e:
@@ -112,7 +112,7 @@ class MySportsButtons:
                 return False
 
         else:
-            print("CACHED IMAGE NOT FOUND")
+            print("CACHED IMAGE NOT FOUND 2")
             return False
     # endregion
 

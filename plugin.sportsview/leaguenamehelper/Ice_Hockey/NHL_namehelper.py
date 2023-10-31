@@ -55,6 +55,39 @@ class NHLHelper:
         "Vegas Golden Knights": {'team_id': '135913'},
         "Washington Capitals": {'team_id': '134845'},
         "Winnipeg Jets": {'team_id': '134851'},
+
+        "Ducks": {'team_id': '134846'},
+        "Coyotes": {'team_id': '134847'},
+        "Bruins": {'team_id': '134830'},
+        "Sabres": {'team_id': '134831'},
+        "Flames": {'team_id': '134848'},
+        "Hurricanes": {'team_id': '134838'},
+        "Blackhawks": {'team_id': '134854'},
+        "Avalanche": {'team_id': '134855'},
+        "Blue Jackets": {'team_id': '134839'},
+        "Stars": {'team_id': '134856'},
+        "Red Wings": {'team_id': '134832'},
+        "Oilers": {'team_id': '134849'},
+        "Panthers": {'team_id': '134833'},
+        "Kings": {'team_id': '134852'},
+        "Wild": {'team_id': '134857'},
+        "Canadiens": {'team_id': '134834'},
+        "Predators": {'team_id': '134858'},
+        "Devils": {'team_id': '134840'},
+        "Islanders": {'team_id': '134841'},
+        "Rangers": {'team_id': '134842'},
+        "Senators": {'team_id': '134835'},
+        "Flyers": {'team_id': '134843'},
+        "Penguins": {'team_id': '134844'},
+        "Sharks": {'team_id': '134853'},
+        "Kraken": {'team_id': '140082'},
+        "Blues": {'team_id': '134859'},
+        "Lightning": {'team_id': '134836'},
+        "Maple Leafs": {'team_id': '134837'},
+        "Canucks": {'team_id': '134850'},
+        "Golden Knights": {'team_id': '135913'},
+        "Capitals": {'team_id': '134845'},
+        "Jets": {'team_id': '134851'},
     }
     # endregion
 
@@ -103,31 +136,26 @@ class NHLHelper:
             # SEARCH THROUGH THE MATCH FILE NAME FOR THE ROUND NUMBER
             # region
             round_number = None
-            round_match = re.search(r"Round (\d+)|(\d+) Round|R\d{2}|R_(\d+)", match)
+            round_match = re.search(r"\d{4}-\d{2}-\d{2}|\d{4}\s+\d{2}\s+\d{2}|\d{4}.\d{2}.\d{2}|\d{2}-\d{2}-\d{4}|\d{2}\s+\d{2}\s+\d{4}|\d{2}.\d{2}.\d{4}", match)
             # endregion
 
             # IF ROUND MATCH HAS A VALUE, THEN CONVERT IT TO ROUND_NUMBER
             # region
             if round_match:
-                # Check which part of the regex matched
-                if round_match.group(0):
-                    round_number = round_match.group(0)
-                elif round_match.group(1):
-                    round_number = round_match.group(1)
-                elif round_match.group(2):
-                    round_number = round_match.group(2)
-                elif round_match.group(3):
-                    round_number = round_match.group(3)
+                round_number = (round_match.group(0))
+                print("Round number:", round_number)
             else:
-                print("Round number not found in match:", match)
-            
-            # remove all non-numeric characters
-            round_number = ''.join(filter(str.isdigit, round_number))
+                print("Date not found in match:", match)
             # endregion
 
-            # IF TEAM01, TEAM02, AND ROUND_NUMBER ARE NOT NONE THEN CALL THE GET_EVENT_ID METHOD
-            # region
 
+            print("team01:", team01)
+            print("team02:", team02)
+            print("round_number:", round_number)
+
+
+
+            # IF TEAM01, TEAM02, AND ROUND NUMBER (DATE) IS NOT NONE THEN CALL THE GET_EVENT_ID METHOD
             if team01 is not None and team02 is not None and round_number is not None:
                 self.get_event_id(team01, team02, round_number, available_matches, events, match)
             else:
@@ -143,33 +171,39 @@ class NHLHelper:
         # region
         team01_str = str(team01)
         team02_str = str(team02)
-        round_number = int(round_number)
-
+        event_id = None
         # endregion
         
+        parsed_round_date_time = parser.parse(round_number, dayfirst=True)
+
+        print("events", events)
+
         # Loop through each event in the events list
         for event in events:
             event_home_team = event["idHomeTeam"]
             event_away_team = event["idAwayTeam"]
+            event_round_str = event["dateEvent"]
 
-            match_found = False
-
-            # Check if either home and away teams match team01 and team02, or vice versa
+            print("event_home_team:", event_home_team)
+            print("event_away_team:", event_away_team)
+            print("event_round_str:", event_round_str)
+            
             if (event_home_team == team01_str and event_away_team == team02_str) or (event_home_team == team02_str and event_away_team == team01_str):
-                event_round = int(event["intRound"])
-                match_found = True
+                event_round = parser.parse(event_round_str).date()
                 
-                # Check if the event's round matches the provided round_number
-                if match_found:
-                    if event_round == round_number:
+                if parsed_round_date_time.date() == event_round:
+                    event_id = event["idEvent"]
+                    print(f"Match found for round {parsed_round_date_time.date()}")
+                    break
+                else:
+                    print("FILENAME ROUND DOESN'T MATCH EVENT DATE")
+            else:
+                print("FILENAME TEAMS DON'T MATCH EVENT TEAMS")
 
-                        event_id = event["idEvent"]  # Access the event ID
-
-                        # Call the get_event_info method
-                        self.get_event_info(team01, team02, round_number, available_matches, events, event_id, match)
-                        break
-
-    # endregion           
+        # Call the get_event_info method
+        if event_id:
+            self.get_event_info(team01, team02, round_number, available_matches, events, event_id, match)
+    # endregion             
 
     # get_event_info method
     # region
