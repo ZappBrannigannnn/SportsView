@@ -47,4 +47,6 @@ class AllSportsWindow(xbmcgui.WindowXML):
         elif action == xbmcgui.ACTION_MOVE_DOWN:
             # Call the method in MySportsButtons to move the focus down
             self.allsports_buttons.moveFocus(0, 1)
+        elif action == xbmcgui.ACTION_NAV_BACK:
+            self.close()
 
