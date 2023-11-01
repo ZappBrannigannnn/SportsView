@@ -19,14 +19,15 @@ class MySportsWindow(xbmcgui.WindowXML):
     def onInit(self):
         xbmc.log("MySportsWindow - onInit")
 
-        # Call the method to fetch sports data and create buttons
-        self.sports_buttons.fetch_sports_data()
+        # Call the get sports folders method
+        self.sports_buttons.get_sports_folders()
 
-        # Display the buttons on the my sports window
-        self.sports_buttons.display_buttons()
+        # Get FocusID
+        self.sports_buttons.display_image()
 
-        # Display the image
-        self.sports_buttons.update_displayed_image()
+        # Call the method to check if the text file exists
+        self.sports_buttons.file_exists()
+
     # endregion
 
     # onAction method in this class to handle the button action

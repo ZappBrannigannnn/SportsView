@@ -13,12 +13,15 @@ import urllib.request
 import base64
 from allsports.allsportsapi import SportsAPI
 from myleagues.myleagueswindow import MyLeaguesWindow
-from PIL import Image, ImageDraw, ImageFont
+from PIL import Image, ImageDraw, ImageFont, ImageOps
+import requests
 # endregion
 
 # CLASS MySportsButtons
 # region
 
+# API KEY STUFF
+# region
 # Your encryption key (keep it secret)
 encryption_key = b'ZappBSportsVAPI6'
 
@@ -29,139 +32,26 @@ encrypted_api_key = addon.getSetting('setting2')
 apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
 API_URL = f"https://www.thesportsdb.com/api/v1/json/{apikey}/all_sports.php"
+# endregion
 
 class MySportsButtons:
     def __init__(self, parent_window, window_manager):  # Pass the window_manager instance as an argument
         self.parent_window = parent_window
-        self.label = None
         self.buttons = []
+        self.button_start_percent = 45
+        self.sports_data = []
+        self.sports_folders = []
+
         self.focused_index = -1  # Initialize focused_index attribute
         self.available_sports = []  # Initialize available_sports attribute
-        self.window_height = None
-        self.window_width = None
-        self.button_height = None
-        self.button_width = None
-        self.image_height = None
-        self.image_width = None
-        self.buttons_start_y = None
-        self.button_start_percent = 45
-        self.first_visible_index = 0
-        self.last_visible_index = 0
-        self.sportname = 0
-        self.loading = True
-        self.temp_folder = xbmcvfs.translatePath("special://home/temp/sportsview/my_sports_buttons_cache/")  # Temporary folder for cached images
-        os.makedirs(self.temp_folder, exist_ok=True)  # Create the temp folder if it doesn't exist
-# endregion
-
-    # GET THE AVAILABLE SPORTS IN THE SPORTS FOLDER
-    # region
-    def get_sports_folders(self):
-
-        addon = xbmcaddon.Addon()
-        sports_folder_path = addon.getSetting('setting1')
-
-        try:
-            # Check if the SMB share exists using xbmcvfs.
-            if xbmcvfs.exists(sports_folder_path):
-                print("PATH EXISTS")
-                sports_items = xbmcvfs.listdir(sports_folder_path)
-                # Flatten the list and remove the extra nesting
-                sports_folders = [item for sublist in sports_items for item in sublist if not item.startswith(".")]
-                print("SPORTS FOLDERS:", sports_folders)
-                return sports_folders
-            else:
-                print("PATH DOES NOT EXIST")
-        except Exception as e:
-            print("Error:", str(e))
-                
-        return []
-    # endregion
-
-    # Check if the image has been cached using ETag
-    # region
-    def check_cache(self, image_url, sport_name):
-        cache_folder = os.path.join(xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache/"))
-        os.makedirs(cache_folder, exist_ok=True)
-
-        # Create a filename from the sport name
-        filename = f"{sport_name.lower().replace(' ', '_', 'unfocused')}.png"
-        cache_filepath = os.path.join(cache_folder, filename)
-
-        # Check if the cached file and ETag file exist
-        if os.path.exists(cache_filepath):
-            try:
-                remote_response = urllib.request.urlopen(image_url)
-                remote_response.close()
-
-            except Exception as e:
-                print("Error checking cache:", e)
-                return False
-
-        else:
-            print("CACHED IMAGE NOT FOUND 2")
-            return False
-    # endregion
-
-    # Download and cache the image with ETag
-    # region
-    def download_and_cache_image(self, image_url, sport_name):
-        cache_folder = os.path.join(xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache/"))
-        os.makedirs(cache_folder, exist_ok=True)
-
-        # Create a filename from the sport name
-        filename = f"{sport_name.lower().replace(' ', '_')}.png"
-        cache_filepath = os.path.join(cache_folder, filename)
-
-        try:
-            # Fetch the image from the URL
-            image_data = urllib.request.urlopen(image_url).read()
-
-            # Calculate the ETag for the fetched image
-            remote_response = urllib.request.urlopen(image_url)
-            remote_etag = remote_response.headers.get("ETag", "")
-            remote_response.close()
-
-            # Write the image data to the cache file
-            with open(cache_filepath, "wb") as cached_file:
-                cached_file.write(image_data)
-
-            # Save the ETag in a separate file with the same name as the image
-            etag_filepath = os.path.join(cache_folder, f"{filename}.etag")
-            with open(etag_filepath, "w") as etag_file:
-                etag_file.write(remote_etag)
-
-            print("Image downloaded and cached successfully.")
-
-        except Exception as e:
-            print("Error downloading and caching image:", e)
-            # Handle the error appropriately (e.g., show an error message to the user)
-    # endregion
-
-    # GET SPORTS DATA FROM ALLSPORTSAPI.PY
-    # region
-    def fetch_sports_data(self):
-        # Set loading status to True when method starts
-        self.update_loading_status(True)
-
-        sports_api = SportsAPI(API_URL)
-        sports_data = sports_api.get_sports_data()
-
-        # Get the available sports folders
-        sports_folders = self.get_sports_folders()
-        print("SPORTS FOLDERS:", sports_folders)
-
-        # CROSS REFERENCE sports_data with sports_folders = available_sports
-        self.available_sports = []
-
-        for sport in sports_data:
-            sport_name = sport.get('strSport', 'N/A')
-            sport_image_url = sport.get('strSportThumb', '')
-
-            if sport_name in sports_folders:
-                self.available_sports.append({
-                    'strSport': sport_name,
-                    'strSportImageURL': sport_image_url
-                })
+        #self.label = None
+        #self.image_height = None
+        #self.image_width = None
+        #self.buttons_start_y = None
+        #self.first_visible_index = 0
+        #self.last_visible_index = 0
+        #self.sportname = 0
+        #self.loading = True
 
         # Calculate the button size based on the user's screen size (adjust the multiplier as needed)
         self.window_height = self.parent_window.getHeight()
@@ -169,29 +59,64 @@ class MySportsButtons:
         self.button_width = int(self.window_width * 0.5)  # 50% of screen width
         self.button_height = int(self.window_height * 0.1)  # 10% of screen height
 
-        # Create buttons for each available sport (for the custom buttons to be made from)
-        for sport in self.available_sports:
-            sport_name = sport.get('strSport', 'N/A')
-            button_image_path = self.generate_custom_buttons(sport_name, self.button_width, self.button_height)
+        self.temp_folder = xbmcvfs.translatePath("special://home/temp/sportsview/my_sports_buttons_cache/")  # Temporary folder for cached images
+        os.makedirs(self.temp_folder, exist_ok=True)  # Create the temp folder if it doesn't exist
 
-        # Calculate the image size based on the user's screen size
-        self.image_width = int(self.window_width * 0.5)  # 50% of the screen
-        self.image_height = int(self.window_height - (self.window_height * (self.button_start_percent * 0.01)))
-    
-        # Set loading status to False when done fetching sports data
-        self.update_loading_status(False)
-    # endregion
+        self.allsports_folder = xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache/")
+# endregion
 
-    # Generate custom font buttons
-    # region
-    def generate_custom_buttons(self, sport_name, button_width, button_height):
-        focused_button_image_path = os.path.join(self.temp_folder, f"{sport_name}_focused.png")
-        unfocused_button_image_path = os.path.join(self.temp_folder, f"{sport_name}_unfocused.png")
+# GET THE AVAILABLE SPORTS IN THE SPORTS FOLDER
+# region
+    def get_sports_folders(self):
 
-        if not os.path.exists(focused_button_image_path) or not os.path.exists(unfocused_button_image_path):
+        addon = xbmcaddon.Addon()
+        sports_folder_path = addon.getSetting('setting1')
+
+        # Check if the SMB share exists using xbmcvfs.
+        if xbmcvfs.exists(sports_folder_path):
+            print("SPORTS PATH EXISTS")
+            sports_items = xbmcvfs.listdir(sports_folder_path)
+            # Flatten the list and remove the extra nesting
+            self.sports_folders = [item for sublist in sports_items for item in sublist if not item.startswith(".")]
+                    
+            # Call the method to check if the sport buttons have been cached
+            self.check_button_cache()
+
+            return self.sports_folders
+
+        else:
+            print("SPORTS PATH DOES NOT EXIST")
+        return []
+# endregion
+
+# Check if the buttons have been cached
+# region
+    def check_button_cache(self):
+        # Check if there is a cached button for each sport in self.sports_folders
+        ### LOOP 1 START ###
+        for sport in self.sports_folders:
+            button_image_path = os.path.join(self.temp_folder, f"{sport}_unfocused.png")
+            if os.path.exists(button_image_path):
+                print("CACHED BUTTON FOUND")
+                # Call the method to display the buttons
+                self.display_buttons(sport)
+            else:
+                print("CACHED BUTTON NOT FOUND")
+                # Call the method to create and cache the button
+                self.generate_custom_buttons(sport)
+# endregion
+
+# Generate custom button
+# region
+    ### STILL IN LOOP 1 ###
+    def generate_custom_buttons(self, sport):
+        self.focused_button_image_path = os.path.join(self.temp_folder, f"{sport}_focused.png")
+        self.unfocused_button_image_path = os.path.join(self.temp_folder, f"{sport}_unfocused.png")
+
+        if not os.path.exists(self.focused_button_image_path) or not os.path.exists(self.unfocused_button_image_path):
             # Create blank images with white backgrounds for both focused and unfocused buttons
-            focused_button_image = Image.new("RGBA", (button_width, button_height), color=(0, 0, 0, 50))
-            unfocused_button_image = Image.new("RGBA", (button_width, button_height), color=(0, 0, 0, 0))
+            focused_button_image = Image.new("RGBA", (self.button_width, self.button_height), color=(0, 0, 0, 50))
+            unfocused_button_image = Image.new("RGBA", (self.button_width, self.button_height), color=(0, 0, 0, 0))
 
             # Create drawing objects for both buttons
             focused_draw = ImageDraw.Draw(focused_button_image)
@@ -203,37 +128,31 @@ class MySportsButtons:
             font = ImageFont.truetype(custom_font_path, desired_font_size)
 
             # Calculate the size of the text
-            text_width, text_height = focused_draw.textsize(sport_name, font)
+            text_width, text_height = focused_draw.textsize(sport, font)
 
             # Calculate the position to center the text on the buttons
-            text_x = (button_width - text_width) // 2
-            text_y = (button_height - text_height) // 2
+            text_x = (self.button_width - text_width) // 2
+            text_y = (self.button_height - text_height) // 2
 
             # Draw the text on both buttons
-            focused_draw.text((text_x, text_y), sport_name, fill=(255, 255, 255, 255), font=font)
-            unfocused_draw.text((text_x, text_y), sport_name, fill=(255, 255, 255, 255), font=font)
+            focused_draw.text((text_x, text_y), sport, fill=(255, 255, 255, 255), font=font)
+            unfocused_draw.text((text_x, text_y), sport, fill=(255, 255, 255, 255), font=font)
 
             # Save the button images to the temp folder
-            focused_button_image.save(focused_button_image_path)
-            unfocused_button_image.save(unfocused_button_image_path)
+            focused_button_image.save(self.focused_button_image_path)
+            unfocused_button_image.save(self.unfocused_button_image_path)
 
-        return focused_button_image_path, unfocused_button_image_path
-    # endregion
+        # Call the method to display the buttons
+        self.display_buttons(sport)
 
-    # Display the buttons
-    # region
-    def display_buttons(self):
-        # Set loading status to True when method starts
-        self.update_loading_status(True)
+# endregion
 
-        # Clear the existing buttons before adding new ones
-        for button in self.buttons:
-            self.parent_window.removeControl(button)
-        self.buttons.clear()
-
-        # Calculate the button size based on the user's screen size (adjust the multiplier as needed)
-        self.button_width = int(self.window_width * 0.5)  # 50% of screen width
-        self.button_height = int(self.window_height * 0.11)  # 10% of screen height
+# Display the custom buttons
+# region
+    ### STILL IN LOOP 1 ###
+    def display_buttons(self, sport):
+        self.available_sports = self.sports_folders
+        self.first_visible_index = -1
 
         # Calculate the number of buttons that can fit on the screen vertically
         max_buttons_vertical = math.floor((self.window_height - self.button_start_percent * 0.01 * self.window_height) / self.button_height)
@@ -248,10 +167,9 @@ class MySportsButtons:
 
         # Create buttons for each available sport (for the custom buttons to be made from)
         for index, sport in enumerate(self.available_sports):
-            sport_name = sport.get('strSport', 'N/A')
 
-            # Generate custom font buttons
-            focused_button_image_path, unfocused_button_image_path = self.generate_custom_buttons(sport_name, self.button_width, self.button_height)
+            self.focused_button_image_path = os.path.join(self.temp_folder, f"{sport}_focused.png")
+            self.unfocused_button_image_path = os.path.join(self.temp_folder, f"{sport}_unfocused.png")   
 
             # Calculate the Y position for the button based on its index
             y_position = self.buttons_start_y + self.button_height * index
@@ -261,15 +179,14 @@ class MySportsButtons:
 
             # Create a clickable button with custom font images
             button = xbmcgui.ControlButton(
-                0, y_position,
-                self.button_width, self.button_height,
-                "",
-                focused_button_image_path,
-                unfocused_button_image_path
+                x=0, 
+                y=y_position,
+                width=self.button_width, 
+                height=self.button_height,
+                label="",
+                focusTexture=self.focused_button_image_path,
+                noFocusTexture=self.unfocused_button_image_path
             )
-
-            # Set the visibility of the button
-            button.setVisible(is_visible)
 
             # Add the button to the window
             self.buttons.append(button)
@@ -281,15 +198,51 @@ class MySportsButtons:
             self.parent_window.setFocusId(first_button_id)
             self.focused_index = 0  # Set the focused index to 0 for the initial focus
 
-        # Set loading status to False when done displaying the buttons
-        self.update_loading_status(False)
-
         # Call visible_buttons_info at the end of display_buttons
         self.visible_buttons_info()
-    # endregion
 
-    # Visible buttons
-    # region
+        return
+# endregion
+
+# MOVEFOCUS
+# region
+    def moveFocus(self, x, y):
+        new_index = self.focused_index + y
+
+        # Check if the down button is pressed and the new index exceeds the last available sport index
+        if y > 0 and new_index >= len(self.available_sports):
+            # Do nothing and return without changing the focus
+            return
+
+        # Check if the up button is pressed and the new index goes below zero
+        elif y < 0 and new_index < 0:
+            # Do nothing and return without changing the focus
+            return
+
+        # Check if the focused button is the last visible index and the down button is pressed
+        elif y > 0 and self.focused_index == self.last_visible_index:
+            self.scrollUp()
+
+        # Check if the focused button is the first visible index and the up button is pressed
+        elif y < 0 and self.focused_index == self.first_visible_index:
+            self.scrollDown()
+
+        # Update the focused index after checking for scrolling
+        self.focused_index = new_index
+
+        # Set the focus on the new focused button
+        self.parent_window.setFocusId(self.buttons[self.focused_index].getId())
+
+        # Add the focus to the new focused button
+        focused_label_text = self.buttons[self.focused_index].getLabel()
+        self.buttons[self.focused_index].setLabel(focused_label_text)
+
+        # Call visible_buttons_info at the end of moveFocus
+        self.display_image()
+# endregion
+
+# Visible buttons
+# region
     def visible_buttons_info(self):
         # Calculate the number of buttons that can fit on the screen vertically
         max_buttons_vertical = math.floor((self.window_height - self.button_start_percent * 0.01 * self.window_height) / self.button_height)
@@ -310,10 +263,257 @@ class MySportsButtons:
 
         # Calculate the number of buttons currently visible on the screen
         num_visible_buttons = self.last_visible_index - self.first_visible_index + 1
-    # endregion
+# endregion
 
-    # Update displayed image
-    # region
+# Scroll up the buttons by one button height
+# region
+    def scrollUp(self):
+        for button in self.buttons:
+            new_y_position = button.getY() - self.button_height
+            if self.buttons_start_y <= new_y_position < self.window_height:
+                button.setVisible(True)
+            else:
+                button.setVisible(False)
+            button.setPosition(button.getX(), new_y_position)
+
+        self.first_visible_index -= 1
+        self.last_visible_index -= 1
+
+        # Call visible_buttons_info after scrolling up
+        self.visible_buttons_info()
+# endregion
+
+# Scroll down the buttons by one button height
+# region
+    def scrollDown(self):
+        for button in self.buttons:
+            new_y_position = button.getY() + self.button_height
+            if self.buttons_start_y <= new_y_position < self.window_height:
+                button.setVisible(True)
+            else:
+                button.setVisible(False)
+            button.setPosition(button.getX(), new_y_position)
+
+        self.first_visible_index += 1
+        self.last_visible_index += 1
+
+        # Call visible_buttons_info after scrolling down
+        self.visible_buttons_info()
+# endregion
+
+####### ALL SPORTS METHODS #######
+# region
+# Method to create the allsports_list.txt file if it doesn't exist
+# region
+    def file_exists(self):
+        # Check if the allsports_cache folder exists
+        self.allsports_folder = xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache/")
+        # Create the temp folder if it doesn't exist
+        os.makedirs(self.allsports_folder, exist_ok=True)  
+
+        # Define the path for allsports_list.txt
+        self.file_path = xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache/allsports_list.txt")
+
+        # Check if the file exists, and create it if it doesn't
+        if not xbmcvfs.exists(self.file_path):
+            with xbmcvfs.File(self.file_path, 'w') as file:
+                pass  # This creates an empty file
+        
+        # Run the file_exists method in a background thread
+        self.what_sports()
+# endregion
+   
+# Get the list of all sports from the API an add them to a temporary list
+# region
+    def what_sports(self):
+        self.sports_data = []
+        response = requests.get(API_URL)
+        data = response.json()
+        for sport in data['sports']:
+            self.sports_data.append(sport)
+
+        # Sort the sports_data list by strSport
+        self.sports_data.sort(key=lambda x: x['strSport'])
+
+        # Extract all of the strSport from the sports_data list
+        self.sports_list = []
+        for sport in self.sports_data:
+            self.sports_list.append(sport['strSport'])
+
+        # Call the compare_sports method
+        self.compare_sports()
+# endregion
+       
+# Method to compare the allsports_list.txt file with the self.sports_list
+# region
+    def compare_sports(self):
+        # Open the allsports_list.txt file for reading
+        with open(self.file_path, "r", encoding="utf-8") as file:
+            # Read the contents of the file
+            self.allsports_list = file.read()
+        # Compare the allsports_list.txt file with the self.sports_list
+        if self.allsports_list == str(self.sports_list):
+            print("ALLSPORTS_LIST.TXT AND SPORTS_LIST MATCH")
+
+            ################## LOOP 1 STARTS HERE #######################
+            for index, sport in enumerate(self.sports_data):
+                button_label = sport['strSport']
+                button_image = sport['strSportThumb']
+        else:
+            print("ALLSPORTS LIST DOES NOT MATCH")
+            # Write the self.sports_list to the allsports_list.txt file
+            with open(self.file_path, "w", encoding="utf-8") as file:
+                file.write(str(self.sports_list))
+
+            # Call the download_and_cache_image method
+            self.download_and_cache_image()
+# endregion
+
+# Method to download and cache the images
+# region
+    def download_and_cache_image(self):
+        # Define the fallback image path
+        self.FALLBACK_IMAGE_PATH = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
+
+        # Get the label and image for each button
+        ################# LOOP 2 STARTS HERE #######################
+        for index, sport in enumerate(self.sports_data):
+            button_label = sport['strSport']
+            button_image = sport['strSportThumb']
+            
+            # If the strSportThumb is empty then use the fallback image
+            if button_image == "":
+                button_image = self.FALLBACK_IMAGE_PATH
+
+            # Download the image to the self.allsports_folder folder
+            response = requests.get(button_image)
+            if response.status_code == 200:
+                sport_image = self.allsports_folder + button_label + ".png"
+                with open(sport_image, 'wb') as f:
+                    f.write(response.content)
+                    print(f"Sport image downloaded and cached: {sport_image}")
+
+                unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
+                with open(unfocused_image, 'wb') as f:
+                    f.write(response.content)
+                    print(f"Unfocused image downloaded and cached: {unfocused_image}")
+
+                # Add the Label to the image using PIL
+                image = Image.open(unfocused_image)
+                draw = ImageDraw.Draw(image)
+
+                # Define the font specifics
+                self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
+                self.font_size = 20
+                font = ImageFont.truetype(self.font_path, self.font_size)
+
+                text = button_label
+                text_width, text_height = draw.textsize(text, font)
+                x = (image.width - text_width) // 2  # Center the text horizontally
+                y = image.height - text_height  # Position the text at the bottom
+
+                draw.text((x, y), text, fill=(255, 255, 255), font=font)
+
+                # Save the image with the added label
+                image.save(unfocused_image)
+
+                print(f"Label added to the image: {unfocused_image}")
+
+                # Call the grayscale method inside the loop
+                self.grayscale(image, unfocused_image, button_label, index)
+
+            else:
+                print("Failed to download the image, using fallback image instead")
+                # Use the local fallback image
+                if os.path.exists(self.FALLBACK_IMAGE_PATH):
+                    unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
+
+                    # Copy the local fallback image to the cache folder
+                    with open(unfocused_image, 'wb') as f:
+                        with open(self.FALLBACK_IMAGE_PATH, 'rb') as local_f:
+                            f.write(local_f.read())
+
+                    print(f"Fallback image copied to cache: {unfocused_image}")
+
+                    # Add the Label to the image using PIL
+                    image = Image.open(unfocused_image)
+                    draw = ImageDraw.Draw(image)
+
+                    # Define the font specifics
+                    self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
+                    self.font_size = 100
+                    font = ImageFont.truetype(self.font_path, self.font_size)
+
+                    text = button_label
+                    text_width, text_height = draw.textsize(text, font)
+                    x = (image.width - text_width) // 2  # Center the text horizontally
+                    y = image.height - text_height  # Position the text at the bottom
+
+                    draw.text((x, y), text, fill=(255, 255, 255), font=font)
+
+                    # Save the image with the added label
+                    image.save(unfocused_image)
+
+                    print(f"Label added to the fallback image: {unfocused_image}")
+
+                    # Call the grayscale method inside the loop for the fallback image
+                    self.grayscale(image, unfocused_image, button_label, index)
+
+                else:
+                    print("Fallback image file not found.")
+# endregion
+
+# Method to use PIL to make a grayscale version of the image
+# region
+    ############################# STILL IN LOOP 2 ##########################
+    def grayscale(self, image, unfocused_image, button_label, index):
+        grayscale_image = ImageOps.grayscale(image)
+        focused_image_rgb = grayscale_image.convert('RGB')
+
+        border_color_rgb = (18, 101, 196)
+        border_width = 10
+        bordered_image = ImageOps.expand(focused_image_rgb, border=border_width, fill=border_color_rgb)
+
+        # Save the bordered grayscale image with the correct filename
+        focused_image_path = self.allsports_folder + button_label + "_focused" + ".png"
+        bordered_image.save(focused_image_path)
+# endregion
+####### ALL SPORTS METHODS CLOSE #######
+# endregion
+
+# Method to display image
+# region
+    def display_image(self):
+        # Get the sport of the focused button
+        sport = self.available_sports[self.focused_index]
+        print("SPORT:", sport)
+        
+        image_path = os.path.join(self.allsports_folder, sport + ".png")
+
+        # Check if the image file exists before using it
+        if os.path.exists(image_path):
+            print("IMAGE EXISTS")
+        else:
+            print(f"The image for {sport} does not exist.")
+
+        # Create a clickable button with custom font images
+        button = xbmcgui.ControlButton(
+            x=0, 
+            y=0,
+            width=500, 
+            height=500,
+            label="",
+            focusTexture=image_path,
+            noFocusTexture=image_path
+            )   
+
+        # Add the button to the window
+        self.buttons.append(button)
+        self.parent_window.addControl(button)
+# endregion
+
+# Update displayed image
+# region
     def update_displayed_image(self):
 
         # Check if there are available sports and the focused index is valid
@@ -330,7 +530,7 @@ class MySportsButtons:
                 print("USING CACHED IMAGE")
                 # If the image is cached, load it from the cache and display it
                 cache_folder = xbmcvfs.translatePath("special://home/temp/sportsview/allsports_cache/")
-                filename = f"{sport_name.lower().replace(' ', '_')}.png"
+                filename = f"{sport_name}.png"
                 cache_filepath = os.path.join(cache_folder, filename)
 
                 try:
@@ -389,7 +589,7 @@ class MySportsButtons:
                         self.download_and_cache_image(sport_image_url, sport_name)
 
                 except Exception as e:
-                    print("Error fetching image from API:", e)
+                    print("Error fetching image from APIiiiiiiiiiiiiiii:", e)
                     # Use a fallback image in case of error or invalid image URL
                     fallback_image_path = "special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png"
                     image_control = xbmcgui.ControlImage(
@@ -405,94 +605,10 @@ class MySportsButtons:
 
                     # Call setVisible(True) to make the image control visible on the window
                     image_control.setVisible(True)
+# endregion
 
-    # endregion
-
-    # MOVE FOCUS
-    # region
-    def moveFocus(self, x, y):
-        new_index = self.focused_index + y
-
-        # Check if the down button is pressed and the new index exceeds the last available sport index
-        if y > 0 and new_index >= len(self.available_sports):
-            # Do nothing and return without changing the focus
-            return
-
-        # Check if the up button is pressed and the new index goes below zero
-        elif y < 0 and new_index < 0:
-            # Do nothing and return without changing the focus
-            return
-
-        # Check if the focused button is the last visible index and the down button is pressed
-        elif y > 0 and self.focused_index == self.last_visible_index:
-            self.scrollUp()
-
-        # Check if the focused button is the first visible index and the up button is pressed
-        elif y < 0 and self.focused_index == self.first_visible_index:
-            self.scrollDown()
-
-        # Update the focused index after checking for scrolling
-        self.focused_index = new_index
-
-        # Set the focus on the new focused button
-        self.parent_window.setFocusId(self.buttons[self.focused_index].getId())
-
-        # Add the focus to the new focused button
-        focused_label_text = self.buttons[self.focused_index].getLabel()
-        self.buttons[self.focused_index].setLabel(focused_label_text)
-
-        # Call the method to update the displayed image based on the focused index
-        self.update_displayed_image()
-
-        # Call visible_buttons_info at the end of moveFocus
-        self.visible_buttons_info()
-    # endregion
-
-    # Scroll up the buttons by one button height
-    # region
-    def scrollUp(self):
-        for button in self.buttons:
-            new_y_position = button.getY() - self.button_height
-            if self.buttons_start_y <= new_y_position < self.window_height:
-                button.setVisible(True)
-            else:
-                button.setVisible(False)
-            button.setPosition(button.getX(), new_y_position)
-
-        self.first_visible_index -= 1
-        self.last_visible_index -= 1
-
-        # Call visible_buttons_info after scrolling up
-        self.visible_buttons_info()
-
-    # endregion
-
-    # Scroll down the buttons by one button height
-    # region
-    def scrollDown(self):
-        for button in self.buttons:
-            new_y_position = button.getY() + self.button_height
-            if self.buttons_start_y <= new_y_position < self.window_height:
-                button.setVisible(True)
-            else:
-                button.setVisible(False)
-            button.setPosition(button.getX(), new_y_position)
-
-        self.first_visible_index += 1
-        self.last_visible_index += 1
-
-        # Call visible_buttons_info after scrolling down
-        self.visible_buttons_info()
-    # endregion
-
-    # Method to update loading status
-    # region
-    def update_loading_status(self, status):
-        self.loading = status
-    # endregion
-
-    # Method for launching My Leagues window
-    # region
+# Method for launching My Leagues window
+# region
     def launch_my_leagues_window(self):
         from window_manager import WindowManager
 
@@ -501,10 +617,10 @@ class MySportsButtons:
 
         # Call the show_my_leagues_page method of the existing WindowManager instance
         self.window_manager.show_my_leagues_page(sportname=self.sportname)
-    # endregion
+# endregion
 
-    # onClick
-    # region
+# onClick
+# region
     def onClick(self, controlId):
         # Check the loading status before processing any clicks
         if self.loading:
@@ -525,4 +641,4 @@ class MySportsButtons:
 
             # Launch My Leagues window
             self.launch_my_leagues_window()
-    # endregion
+# endregion

@@ -49,4 +49,4 @@ class AllSportsWindow(xbmcgui.WindowXML):
             self.allsports_buttons.moveFocus(0, 1)
         elif action == xbmcgui.ACTION_NAV_BACK:
             self.close()
-
+# endregion

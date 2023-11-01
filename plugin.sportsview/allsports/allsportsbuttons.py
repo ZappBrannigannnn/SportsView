@@ -126,10 +126,15 @@ class AllSportsButtons:
             # Download the image to the self.allsports_folder folder
             response = requests.get(button_image)
             if response.status_code == 200:
+                sport_image = self.allsports_folder + button_label + ".png"
+                with open(sport_image, 'wb') as f:
+                    f.write(response.content)
+                    print(f"Sport image downloaded and cached: {sport_image}")
+
                 unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
                 with open(unfocused_image, 'wb') as f:
                     f.write(response.content)
-                    print(f"Image downloaded and cached: {unfocused_image}")
+                    print(f"Unfocused image downloaded and cached: {unfocused_image}")
 
                 # Add the Label to the image using PIL
                 image = Image.open(unfocused_image)
@@ -209,9 +214,6 @@ class AllSportsButtons:
         # Save the bordered grayscale image with the correct filename
         focused_image_path = self.allsports_folder + button_label + "_focused" + ".png"
         bordered_image.save(focused_image_path)
-
-        # Return the final bordered image
-        # return bordered_image
 
         self.display_buttons(button_label, index)
 # endregion
