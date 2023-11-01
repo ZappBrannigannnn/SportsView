@@ -427,6 +427,11 @@ class MySportsButtons:
                 # Use the local fallback image
                 if os.path.exists(self.FALLBACK_IMAGE_PATH):
                     unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
+                    sport_image = self.allsports_folder + button_label + ".png"
+
+                    with open(sport_image, 'wb') as f:
+                        with open(self.FALLBACK_IMAGE_PATH, 'rb') as local_f:
+                            f.write(local_f.read())
 
                     # Copy the local fallback image to the cache folder
                     with open(unfocused_image, 'wb') as f:
