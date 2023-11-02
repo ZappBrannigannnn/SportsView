@@ -530,20 +530,6 @@ class MySportsButtons:
     def onClick(self, focused_button_id, sport):
         print("SPORT", sport)
 
-        """
-        # Find the index of the clicked button based on its controlId
-        clicked_index = None
-        for index, button in enumerate(self.buttons):
-            if button.getId() == controlId:
-                clicked_index = index
-                break
-
-        # Check if a valid button is clicked
-        #if clicked_index is not None:
-        # Get the sport data for the clicked button
-        clicked_sport = self.available_sports[clicked_index]
-        self.sportname = clicked_sport.get('strSport', 'N/A')
-"""
         self.sportname = sport
         # Launch My Leagues window
         self.launch_my_leagues_window()
