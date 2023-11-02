@@ -443,7 +443,7 @@ class MySportsButtons:
 
                     # Define the font specifics
                     self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
-                    self.font_size = 100
+                    self.font_size = 180
                     font = ImageFont.truetype(self.font_path, self.font_size)
 
                     text = button_label
