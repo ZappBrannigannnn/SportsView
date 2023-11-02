@@ -44,20 +44,17 @@ class MySportsButtons:
 
         self.focused_index = -1  # Initialize focused_index attribute
         self.available_sports = []  # Initialize available_sports attribute
-        #self.label = None
-        #self.image_height = None
-        #self.image_width = None
-        #self.buttons_start_y = None
-        #self.first_visible_index = 0
-        #self.last_visible_index = 0
-        #self.sportname = 0
-        #self.loading = True
 
         # Calculate the button size based on the user's screen size (adjust the multiplier as needed)
         self.window_height = self.parent_window.getHeight()
         self.window_width = self.parent_window.getWidth()
         self.button_width = int(self.window_width * 0.5)  # 50% of screen width
-        self.button_height = int(self.window_height * 0.1)  # 10% of screen height
+
+        # Calculate the vertical offset for the starting position of the buttons
+        self.buttons_start_y = int(self.window_height * (self.button_start_percent * 0.01))
+        self.button_height = int((self.window_height - self.button_start_percent) / 9) # no idea why 9 works but it does
+
+        self.image_height = int(((100 - self.button_start_percent)*0.01)*self.window_height)
 
         self.temp_folder = xbmcvfs.translatePath("special://home/temp/sportsview/my_sports_buttons_cache/")  # Temporary folder for cached images
         os.makedirs(self.temp_folder, exist_ok=True)  # Create the temp folder if it doesn't exist
@@ -491,7 +488,6 @@ class MySportsButtons:
     def display_image(self):
         # Get the sport of the focused button
         sport = self.available_sports[self.focused_index]
-        print("SPORT:", sport)
         
         image_path = os.path.join(self.allsports_folder, sport + ".png")
 
@@ -503,10 +499,10 @@ class MySportsButtons:
 
         # Create a clickable button with custom font images
         button = xbmcgui.ControlButton(
-            x=0, 
-            y=0,
-            width=500, 
-            height=500,
+            x=self.button_width, 
+            y=self.buttons_start_y,
+            width=self.button_width, 
+            height=self.image_height,
             label="",
             focusTexture=image_path,
             noFocusTexture=image_path
@@ -531,11 +527,10 @@ class MySportsButtons:
 
 # onClick
 # region
-    def onClick(self, controlId):
-        # Check the loading status before processing any clicks
-        if self.loading:
-            return
+    def onClick(self, focused_button_id, sport):
+        print("SPORT", sport)
 
+        """
         # Find the index of the clicked button based on its controlId
         clicked_index = None
         for index, button in enumerate(self.buttons):
@@ -544,11 +539,12 @@ class MySportsButtons:
                 break
 
         # Check if a valid button is clicked
-        if clicked_index is not None:
-            # Get the sport data for the clicked button
-            clicked_sport = self.available_sports[clicked_index]
-            self.sportname = clicked_sport.get('strSport', 'N/A')
-
-            # Launch My Leagues window
-            self.launch_my_leagues_window()
+        #if clicked_index is not None:
+        # Get the sport data for the clicked button
+        clicked_sport = self.available_sports[clicked_index]
+        self.sportname = clicked_sport.get('strSport', 'N/A')
+"""
+        self.sportname = sport
+        # Launch My Leagues window
+        self.launch_my_leagues_window()
 # endregion

@@ -51,7 +51,8 @@ class MySportsWindow(xbmcgui.WindowXML):
         elif action == xbmcgui.ACTION_SELECT_ITEM:
             # Pass the controlId of the clicked button to the onClick method
             focused_button_id = self.getFocusId()
-            self.sports_buttons.onClick(focused_button_id)
+            sport = self.sports_buttons.available_sports[self.sports_buttons.focused_index]
+            self.sports_buttons.onClick(focused_button_id, sport)
         else:
             pass
     # endregion
