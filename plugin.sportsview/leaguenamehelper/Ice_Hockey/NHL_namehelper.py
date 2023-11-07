@@ -190,6 +190,8 @@ class NHLHelper:
             
             if (event_home_team == team01_str and event_away_team == team02_str) or (event_home_team == team02_str and event_away_team == team01_str):
                 event_round = parser.parse(event_round_str).date()
+
+                print("PARSED ROUND DATE:", parsed_round_date_time.date())
                 
                 if parsed_round_date_time.date() == event_round:
                     event_id = event["idEvent"]
