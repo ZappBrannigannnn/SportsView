@@ -176,7 +176,7 @@ class NHLHelper:
         
         parsed_round_date_time = parser.parse(round_number, dayfirst=True)
 
-        print("events", events)
+#######
 
         # Loop through each event in the events list
         for event in events:
@@ -224,7 +224,7 @@ class NHLHelper:
         # Parse the response as JSON
         data = response.json()
 
-        round_number = "Round " + str(round_number)
+        round_number = str(round_number)
         
         # Check if the "events" key is present in the JSON data
         if "events" in data:
