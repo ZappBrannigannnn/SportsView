@@ -49,6 +49,7 @@ class NHLHelper:
         "San Jose Sharks": {'team_id': '134853'},
         "Seattle Kraken": {'team_id': '140082'},
         "St. Louis Blues": {'team_id': '134859'},
+        "St Louis Blues": {'team_id': '134859'},
         "Tampa Bay Lightning": {'team_id': '134836'},
         "Toronto Maple Leafs": {'team_id': '134837'},
         "Vancouver Canucks": {'team_id': '134850'},
