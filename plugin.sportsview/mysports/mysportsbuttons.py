@@ -401,13 +401,20 @@ class MySportsButtons:
 
                 # Define the font specifics
                 self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
-                self.font_size = 20
+                self.font_size = 120
                 font = ImageFont.truetype(self.font_path, self.font_size)
 
                 text = button_label
+
                 text_width, text_height = draw.textsize(text, font)
                 x = (image.width - text_width) // 2  # Center the text horizontally
-                y = image.height - text_height  # Position the text at the bottom
+                y = (image.height - text_height) // 2  # Position the text at the bottom
+
+                # Draw the black border around the text
+                border_size = 8  # Adjust the border size as needed
+                for i in range(-border_size, border_size + 1):
+                    for j in range(-border_size, border_size + 1):
+                        draw.text((x + i, y + j), text, fill=(44, 44, 44), font=font)
 
                 draw.text((x, y), text, fill=(255, 255, 255), font=font)
 
@@ -473,7 +480,7 @@ class MySportsButtons:
         focused_image_rgb = grayscale_image.convert('RGB')
 
         border_color_rgb = (18, 101, 196)
-        border_width = 10
+        border_width = 15
         bordered_image = ImageOps.expand(focused_image_rgb, border=border_width, fill=border_color_rgb)
 
         # Save the bordered grayscale image with the correct filename
