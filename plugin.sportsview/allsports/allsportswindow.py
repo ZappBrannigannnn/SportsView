@@ -53,4 +53,8 @@ class AllSportsWindow(xbmcgui.WindowXML):
             # Pass the controlId of the clicked button to the onClick method
             focused_button_id = self.getFocusId()
             print ("focused_button_iddddddddddddd:", focused_button_id)
+            focused_sport_name = self.allsports_buttons.get_focused_sport_name()
+            if focused_sport_name:
+                print("Currently focused sportclickckckckckckc:", focused_sport_name)
+
 # endregion

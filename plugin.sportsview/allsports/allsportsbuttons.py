@@ -288,12 +288,6 @@ class AllSportsButtons:
         if index == 0:
             self.parent_window.setFocusId(button.getId())
             self.focused_index = 0
-
-            # Retrieve the name of the currently focused sport
-            focused_sport_name = self.get_focused_sport_name()
-            if focused_sport_name:
-                print("Currently focused sport:", focused_sport_name)
-                
         else:
             pass
 # endregion
@@ -362,13 +356,6 @@ class AllSportsButtons:
         elif focused_row == self.top_visible_row:
             # Call scrollDown
             self.scrollDown()
-        
-        print ("focused button id", self.buttons[self.focused_index].getId())
-
-        # Retrieve the name of the currently focused sport
-        focused_sport_name = self.get_focused_sport_name()
-        if focused_sport_name:
-            print("Currently focused sport:", focused_sport_name)
 # endregion
 
 # ScrollUp Method
@@ -407,6 +394,10 @@ class AllSportsButtons:
         self.top_visible_row = self.top_visible_row - 1
 # endregion
 
+# Get_Focused_Sport_Name Method (Used to get the sport name that was associate with the ID upon creation.)
+# region
     def get_focused_sport_name(self):
         focused_button_id = self.buttons[self.focused_index].getId()
         return self.button_id_to_sport_name.get(focused_button_id)
+        
+# endregion
