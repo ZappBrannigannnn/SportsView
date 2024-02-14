@@ -49,4 +49,8 @@ class AllSportsWindow(xbmcgui.WindowXML):
             self.allsports_buttons.moveFocus(0, 1)
         elif action == xbmcgui.ACTION_NAV_BACK:
             self.close()
+        elif action == xbmcgui.ACTION_SELECT_ITEM:
+            # Pass the controlId of the clicked button to the onClick method
+            focused_button_id = self.getFocusId()
+            print ("focused_button_iddddddddddddd:", focused_button_id)
 # endregion

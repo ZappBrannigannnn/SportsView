@@ -30,7 +30,8 @@ class AllSportsButtons:
     def __init__(self, *args, **kwargs):
 
         ######################################################################################################################################
-        self.buttons = []
+        self.buttons = [] # Initialize a list of button
+        self.button_id_to_sport_name = {}  # Dictionary to map button IDs to sport names
         ######################################################################################################################################
     
     def set_parent_window(self, parent_window):
@@ -280,10 +281,19 @@ class AllSportsButtons:
         # Add the button to the window
         self.parent_window.addControl(button)
 
+        # Add button ID and sport name mapping to the dictionary
+        self.button_id_to_sport_name[button.getId()] = button_label
+
         # Set focus on the first button
         if index == 0:
             self.parent_window.setFocusId(button.getId())
             self.focused_index = 0
+
+            # Retrieve the name of the currently focused sport
+            focused_sport_name = self.get_focused_sport_name()
+            if focused_sport_name:
+                print("Currently focused sport:", focused_sport_name)
+                
         else:
             pass
 # endregion
@@ -293,42 +303,42 @@ class AllSportsButtons:
 # region
     def visible_buttons(self):
         # get the currently focused button
-        print("FOCUSED BUTTON", self.focused_index)
+        #print("FOCUSED BUTTON", self.focused_index)
 
         # Get the total number of buttons available
         num_buttons = len(self.buttons)
 
         # Calculate the number of visible rows
         self.num_visible_rows = self.screen_height // (self.button_height + self.horiz_gap_size)
-        print("VISIBLE ROWS", self.num_visible_rows)
+        #print("VISIBLE ROWS", self.num_visible_rows)
 
         # Calculate the number of visible buttons
         num_visible_buttons = self.num_visible_rows * self.num_columns
-        print("VISIBLE BUTTONS", num_visible_buttons)
+        #print("VISIBLE BUTTONS", num_visible_buttons)
 
         self.top_visible_row = -1
         self.bottom_visible_row = int(self.screen_height // (self.button_height + self.horiz_gap_size))
-        print("top visible row", self.top_visible_row)
-        print("bottom visible row", self.bottom_visible_row)
+        #print("top visible row", self.top_visible_row)
+        #print("bottom visible row", self.bottom_visible_row)
 # endregion
 
 # moveFocus method
 # region
     def moveFocus(self, x, y):
-        print("movefocussssssssssssssssssssssss", x, y)
+        #print("movefocussssssssssssssssssssssss", x, y)
         # Calculate where the new focus will go eventually
         new_index = self.focused_index + (x + y * self.num_columns)
 
         # Check if the up button is pressed and the new index goes below zero
         if y < 0 and new_index < 0:
             # Do nothing and return without changing the focus
-            print("DO NOTHING AT THE TOP")
+            #print("DO NOTHING AT THE TOP")
             return
 
         # Check if the down button is pressed and the new index exceeds the last available sport index
         elif y > 0 and new_index >= len(self.buttons):
             # Do nothing and return without changing the focus
-            print("DO NOTHING AT THE BOTTOM")
+            #print("DO NOTHING AT THE BOTTOM")
             return
 
         if new_index >= 0 and new_index < len(self.buttons): #Check if the new index exists
@@ -345,13 +355,20 @@ class AllSportsButtons:
         # Calculate the last visible button index
         self.last_visible_button_index = self.first_visible_button_index + self.num_visible_rows * self.num_columns
 
-        print("Currently focused button is in row:", focused_row)
+        #print("Currently focused button is in row:", focused_row)
         if focused_row == self.bottom_visible_row:
             # Call scrollUp
             self.scrollUp()
         elif focused_row == self.top_visible_row:
             # Call scrollDown
             self.scrollDown()
+        
+        print ("focused button id", self.buttons[self.focused_index].getId())
+
+        # Retrieve the name of the currently focused sport
+        focused_sport_name = self.get_focused_sport_name()
+        if focused_sport_name:
+            print("Currently focused sport:", focused_sport_name)
 # endregion
 
 # ScrollUp Method
@@ -389,3 +406,7 @@ class AllSportsButtons:
         self.bottom_visible_row = self.bottom_visible_row - 1
         self.top_visible_row = self.top_visible_row - 1
 # endregion
+
+    def get_focused_sport_name(self):
+        focused_button_id = self.buttons[self.focused_index].getId()
+        return self.button_id_to_sport_name.get(focused_button_id)
