@@ -49,7 +49,6 @@ class MySportsWindow(xbmcgui.WindowXML):
             # Call the method in MySportsButtons to move the focus down
             self.sports_buttons.moveFocus(0, 1)
         elif action == xbmcgui.ACTION_SELECT_ITEM:
-            # Pass the controlId of the clicked button to the onClick method
             focused_button_id = self.getFocusId()
             sport = self.sports_buttons.available_sports[self.sports_buttons.focused_index]
             self.sports_buttons.onClick(focused_button_id, sport)
