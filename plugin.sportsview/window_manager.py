@@ -44,7 +44,7 @@ class WindowManager:
 
     ##### ALL LEAGUES PAGE
     # region
-    def show_all_leagues_page(self):
+    def show_all_leagues_page(self, sportname):
         print("WINDOW MANAGER: LAUNCH ALL LEAGUES PAGE")
         # Create and show the All Leagues page window
         self.close_current_window()

@@ -399,5 +399,25 @@ class AllSportsButtons:
     def get_focused_sport_name(self):
         focused_button_id = self.buttons[self.focused_index].getId()
         return self.button_id_to_sport_name.get(focused_button_id)
-        
+# endregion
+
+# Method for launching My Leagues window
+# region
+    def launch_all_leagues_window(self):
+        from window_manager import WindowManager
+
+        # Create an instance of the WindowManager class
+        self.window_manager = WindowManager()
+
+        # Call the show_all_leagues_page method of the existing WindowManager instance
+        self.window_manager.show_all_leagues_page(sportname=self.sportname)
+# endregion
+
+# onClick
+# region
+    def onClick(self, focused_button_id, focused_sport_name):
+        print("focused_SPORT_name", focused_sport_name)
+        self.sportname=focused_sport_name
+        # Launch My Leagues window
+        self.launch_all_leagues_window()
 # endregion
