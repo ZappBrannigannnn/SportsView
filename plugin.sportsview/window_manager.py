@@ -43,13 +43,13 @@ class WindowManager:
         self.current_window.doModal()
     # endregion
 
-    ##### ALL LEAGUES PAGE
+    # ALL LEAGUES PAGE
     # region
     def show_all_leagues_page(self, sportname):
         print("WINDOW MANAGER: LAUNCH ALL LEAGUES PAGE")
         # Create and show the All Leagues page window
         self.close_current_window()
-        self.current_window = AllLeaguesWindow('allleagues.xml', self.cwd, 'default', '1080i')
+        self.current_window = AllLeaguesWindow('allleagues.xml', self.cwd, 'default', '1080i', sportname=sportname)
         self.current_window.doModal()
     # endregion
 

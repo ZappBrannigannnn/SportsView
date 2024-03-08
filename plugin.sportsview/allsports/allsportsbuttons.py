@@ -403,7 +403,7 @@ class AllSportsButtons:
 
 # Method for launching My Leagues window
 # region
-    def launch_all_leagues_window(self):
+    def launch_all_leagues_window(self, focused_sport_name):
         from window_manager import WindowManager
 
         # Create an instance of the WindowManager class
@@ -416,8 +416,7 @@ class AllSportsButtons:
 # onClick
 # region
     def onClick(self, focused_button_id, focused_sport_name):
-        print("focused_SPORT_name", focused_sport_name)
         self.sportname=focused_sport_name
         # Launch My Leagues window
-        self.launch_all_leagues_window()
+        self.launch_all_leagues_window(focused_sport_name)
 # endregion

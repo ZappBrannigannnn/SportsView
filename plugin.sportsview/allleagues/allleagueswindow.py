@@ -10,13 +10,14 @@ from allleagues.allleaguesbuttons import AllLeaguesButtons
 # region
 class AllLeaguesWindow(xbmcgui.WindowXML):
     def __init__(self, *args, **kwargs):
+        self.sportname = kwargs.get('sportname')
 
         # Initialize the window and other stuff
         super(AllLeaguesWindow, self).__init__(*args, **kwargs)
 
         # Pass the required arguments to AllLeaguesButtons
         cwd = xbmcaddon.Addon().getAddonInfo('path')
-        self.allleagues_buttons = AllLeaguesButtons('allleagues.xml', cwd, 'default', '1080i')
+        self.allleagues_buttons = AllLeaguesButtons('allleagues.xml', cwd, 'default', '1080i', sportname=self.sportname)
         self.allleagues_buttons.set_parent_window(self)  # Set the parent_window attribute
 # endregion
 
@@ -26,10 +27,10 @@ class AllLeaguesWindow(xbmcgui.WindowXML):
         print("AllLeaguesWindow - onInit")
 
         # Call the method to check if the file exists
-        self.allleagues_buttons.file_exists()
+     #   self.allleagues_buttons.file_exists()
 
         # Call the visible_buttons_info method after moving focus
-        self.allleagues_buttons.visible_buttons()
+      #  self.allleagues_buttons.visible_buttons()
 # endregion
 
 # onAction method

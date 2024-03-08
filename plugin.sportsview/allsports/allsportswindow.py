@@ -52,7 +52,6 @@ class AllSportsWindow(xbmcgui.WindowXML):
         elif action == xbmcgui.ACTION_SELECT_ITEM:
             focused_button_id = self.getFocusId()
             focused_sport_name = self.allsports_buttons.get_focused_sport_name()
-            print("Currently focused sportclickckckckckckc:", focused_sport_name)
             # Launch My Leagues window
             self.allsports_buttons.onClick(focused_button_id, focused_sport_name)
 
