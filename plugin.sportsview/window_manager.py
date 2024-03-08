@@ -5,6 +5,7 @@ import xbmcaddon
 import time
 from landingpage.landingpage import LandingPageWindow
 from allsports.allsportswindow import AllSportsWindow
+from allleagues.allleagueswindow import AllLeaguesWindow
 from myleagues.myleagueswindow import MyLeaguesWindow
 from mysports.mysportswindow import MySportsWindow
 from mymatches.mymatcheswindow import MyMatchesWindow
