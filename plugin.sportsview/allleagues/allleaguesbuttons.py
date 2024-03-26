@@ -23,3 +23,5 @@ class AllLeaguesButtons:
 
     def set_parent_window(self, parent_window):
         self.parent_window = parent_window
+
+
