@@ -125,7 +125,7 @@ class MySportsButtons:
             font = ImageFont.truetype(custom_font_path, desired_font_size)
 
             # Calculate the size of the text
-            text_width, text_height = focused_draw.textsize(sport, font)
+            text_width, text_height = focused_draw.textlength(sport, font)
 
             # Calculate the position to center the text on the buttons
             text_x = (self.button_width - text_width) // 2
