@@ -27,10 +27,10 @@ class AllLeaguesWindow(xbmcgui.WindowXML):
         print("AllLeaguesWindow - onInit")
 
         # Call the method to check if the file exists
-     #   self.allleagues_buttons.file_exists()
+        self.allleagues_buttons.file_exists()
 
         # Call the visible_buttons_info method after moving focus
-      #  self.allleagues_buttons.visible_buttons()
+        # self.allleagues_buttons.visible_buttons()
 # endregion
 
 # onAction method
