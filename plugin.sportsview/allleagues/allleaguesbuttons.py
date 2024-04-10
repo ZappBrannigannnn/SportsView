@@ -3,6 +3,7 @@ import xbmcaddon
 import base64
 import xbmcvfs
 import os
+import requests
 
 # API KEY
 # region
@@ -15,8 +16,10 @@ encrypted_api_key = addon.getSetting('setting2')
 
 apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
 
-#API_URL = 
+API_URL = f"www.thesportsdb.com/api/v1/json/{apikey}/search_all_leagues.php?s={self.sportname}"
+print("APIURLLLLLLLLLL", API_URL)
 # endregion
+
 
 # CLASS AllLeaguesButtons
 # region
@@ -27,7 +30,6 @@ class AllLeaguesButtons:
 
     def set_parent_window(self, parent_window):
         self.parent_window = parent_window
-
 # endregion
 
 # Method to create the allleagues_list.txt file if it doesn't exist
