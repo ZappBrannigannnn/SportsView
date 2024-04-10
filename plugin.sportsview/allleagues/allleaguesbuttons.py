@@ -5,28 +5,28 @@ import xbmcvfs
 import os
 import requests
 
-# API KEY
-# region
-# Your encryption key (keep it secret)
-encryption_key = b'ZappBSportsVAPI6'
-
-# Encrypted API key from settings.xml
-addon = xbmcaddon.Addon()
-encrypted_api_key = addon.getSetting('setting2')
-
-apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
-
-API_URL = f"www.thesportsdb.com/api/v1/json/{apikey}/search_all_leagues.php?s={self.sportname}"
-print("APIURLLLLLLLLLL", API_URL)
-# endregion
-
-
 # CLASS AllLeaguesButtons
 # region
 class AllLeaguesButtons:
     def __init__(self, *args, **kwargs):
         self.sportname = str(kwargs.get('sportname'))
         print("allleaguesbuttons.py sportname", self.sportname)
+
+        # API KEY
+        # region
+        # Your encryption key (keep it secret)
+        encryption_key = b'ZappBSportsVAPI6'
+
+        # Encrypted API key from settings.xml
+        addon = xbmcaddon.Addon()
+        encrypted_api_key = addon.getSetting('setting2')
+
+        apikey = base64.b64decode(encrypted_api_key).decode('utf-8')
+
+        self.API_URL = f"https://www.thesportsdb.com/api/v1/json/{apikey}/search_all_leagues.php?s={self.sportname}"
+        print("APIURLLLLLLLLLL", self.API_URL)
+        # endregion
+        
 
     def set_parent_window(self, parent_window):
         self.parent_window = parent_window
@@ -56,7 +56,7 @@ class AllLeaguesButtons:
 # region
     def what_leagues(self):
         self.league_data = []
-        response = requests.get(API_URL)
+        response = requests.get(self.API_URL)
         data = response.json()
         for league in data['leagues']:
             self.league_data.append(league)
