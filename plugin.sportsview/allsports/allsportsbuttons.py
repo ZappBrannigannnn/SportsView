@@ -64,6 +64,9 @@ class AllSportsButtons:
         self.sports_data = []
         response = requests.get(API_URL)
         data = response.json()
+
+        print("SPORTS_DATAaaaaaaaaaaaaaaaaaaaaaa", self.sports_data)
+
         for sport in data['sports']:
             self.sports_data.append(sport)
 

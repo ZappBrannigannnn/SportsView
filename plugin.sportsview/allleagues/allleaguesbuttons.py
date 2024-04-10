@@ -55,20 +55,20 @@ class AllLeaguesButtons:
 # Get the list of all leagues from the API an add them to a temporary list
 # region
     def what_leagues(self):
-        self.league_data = []
+        self.leagues_data = []
         response = requests.get(self.API_URL)
         data = response.json()
-        for league in data['leagues']:
-            self.league_data.append(league)
+        for leagues in data['leagues']:
+            self.leagues_data.append(league)
 
 #####################
-        # Sort the league_data list by strSport*********
-        self.league_data.sort(key=lambda x: x['strSport**************'])
+        # Sort the leagues_data list by strSport*********
+        self.leagues_data.sort(key=lambda x: x['strSport**************'])
 #####################
 
-        # Extract all of the strSport from the league_data list
+        # Extract all of the strSport from the leagues_data list
         self.leagues_list = []
-        for league in self.league_data:
+        for league in self.leagues_data:
             self.leagues_list.append(league['strSport**************'])
 
         # Call the compare_sports method
