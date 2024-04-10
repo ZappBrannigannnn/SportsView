@@ -32,7 +32,7 @@ class AllLeaguesButtons:
         self.parent_window = parent_window
 # endregion
 
-# Method to create the allleagues_list.txt file if it doesn't exist
+# Method to create the allleagues_list_(sport).txt file if it doesn't exist
 # region
     def file_exists(self):
         # Check if the allleagues_cache folder exists
@@ -40,8 +40,8 @@ class AllLeaguesButtons:
         # Create the temp folder if it doesn't exist
         os.makedirs(self.allleagues_folder, exist_ok=True)  
 
-        # Define the path for allleagues_list.txt
-        self.file_path = xbmcvfs.translatePath("special://home/temp/sportsview/allleagues_cache/allleagues_list.txt")
+        # Define the path for allleagues_list_(sport).txt
+        self.file_path = xbmcvfs.translatePath(f"special://home/temp/sportsview/allleagues_cache/allleagues_list_{self.sportname}.txt")
 
         # Check if the file exists, and create it if it doesn't
         if not xbmcvfs.exists(self.file_path):
@@ -74,23 +74,21 @@ class AllLeaguesButtons:
         self.compare_leagues()
 # endregion
 
-# Method to compare the allleagues_list.txt file with the self.sports_list
+# Method to compare the allleagues_list_(sport).txt file with the self.sports_list
 # region
     def compare_leagues(self):
-        # Open the allleagues_list.txt file for reading
+        # Open the allleagues_list_(sport).txt file for reading
         with open(self.file_path, "r", encoding="utf-8") as file:
             # Read the contents of the file
             self.allleagues_list = file.read()
-        # Compare the allleagues_list.txt file with the self.leagues_list
+        # Compare the allleagues_list_(sport).txt file with the self.leagues_list
         if self.allleagues_list == str(self.leagues_list):
-            print("ALLLEAGUES_LIST.TXT AND LEAGUES_LIST MATCH")
+            print("ALLLEAGUES_LIST_(SPORT).TXT AND LEAGUES_LIST MATCH")
 
-
-"""
             ################## LOOP 1 STARTS HERE #######################
-            for index, sport in enumerate(self.sports_data):
-                button_label = sport['strSport']
-                button_image = sport['strSportThumb']
+            for index, sport in enumerate(self.leagues_data):
+                button_label = sport['strLeague']
+                button_image = sport['strBadge']
 
                 #self.display_buttons(button_label, button_image, index)
                 self.display_buttons(button_label, index)
@@ -99,9 +97,8 @@ class AllLeaguesButtons:
             print("ALLSPORTS LIST DOES NOT MATCH")
             # Write the self.sports_list to the allsports_list.txt file
             with open(self.file_path, "w", encoding="utf-8") as file:
-                file.write(str(self.sports_list))
+                file.write(str(self.leagues_list))
 
             # Call the download_and_cache_image method
-            self.download_and_cache_image()
+            # self.download_and_cache_image()
 # endregion
-"""
