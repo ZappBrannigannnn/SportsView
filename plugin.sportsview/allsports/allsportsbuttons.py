@@ -65,8 +65,6 @@ class AllSportsButtons:
         response = requests.get(API_URL)
         data = response.json()
 
-        print("SPORTS_DATAaaaaaaaaaaaaaaaaaaaaaa", self.sports_data)
-
         for sport in data['sports']:
             self.sports_data.append(sport)
 
@@ -329,13 +327,13 @@ class AllSportsButtons:
         # Check if the up button is pressed and the new index goes below zero
         if y < 0 and new_index < 0:
             # Do nothing and return without changing the focus
-            #print("DO NOTHING AT THE TOP")
+            print("DO NOTHING AT THE TOP")
             return
 
         # Check if the down button is pressed and the new index exceeds the last available sport index
         elif y > 0 and new_index >= len(self.buttons):
             # Do nothing and return without changing the focus
-            #print("DO NOTHING AT THE BOTTOM")
+            print("DO NOTHING AT THE BOTTOM")
             return
 
         if new_index >= 0 and new_index < len(self.buttons): #Check if the new index exists

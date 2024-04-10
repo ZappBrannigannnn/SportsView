@@ -58,19 +58,50 @@ class AllLeaguesButtons:
         self.leagues_data = []
         response = requests.get(self.API_URL)
         data = response.json()
-        for leagues in data['leagues']:
+        for league in data['countries']:
             self.leagues_data.append(league)
 
-#####################
-        # Sort the leagues_data list by strSport*********
-        self.leagues_data.sort(key=lambda x: x['strSport**************'])
-#####################
+        # Sort the leagues_data list by strLeague
+        self.leagues_data.sort(key=lambda x: x['strLeague'])
 
-        # Extract all of the strSport from the leagues_data list
+        # Extract all of the strLeague from the leagues_data list
         self.leagues_list = []
         for league in self.leagues_data:
-            self.leagues_list.append(league['strSport**************'])
+            self.leagues_list.append(league['strLeague'])
+            print("LEAGUES IN ORDER", self.leagues_list)
 
-        # Call the compare_sports method
+        # Call the compare_leagues method
         self.compare_leagues()
 # endregion
+
+# Method to compare the allleagues_list.txt file with the self.sports_list
+# region
+    def compare_leagues(self):
+        # Open the allleagues_list.txt file for reading
+        with open(self.file_path, "r", encoding="utf-8") as file:
+            # Read the contents of the file
+            self.allleagues_list = file.read()
+        # Compare the allleagues_list.txt file with the self.leagues_list
+        if self.allleagues_list == str(self.leagues_list):
+            print("ALLLEAGUES_LIST.TXT AND LEAGUES_LIST MATCH")
+
+
+"""
+            ################## LOOP 1 STARTS HERE #######################
+            for index, sport in enumerate(self.sports_data):
+                button_label = sport['strSport']
+                button_image = sport['strSportThumb']
+
+                #self.display_buttons(button_label, button_image, index)
+                self.display_buttons(button_label, index)
+                
+        else:
+            print("ALLSPORTS LIST DOES NOT MATCH")
+            # Write the self.sports_list to the allsports_list.txt file
+            with open(self.file_path, "w", encoding="utf-8") as file:
+                file.write(str(self.sports_list))
+
+            # Call the download_and_cache_image method
+            self.download_and_cache_image()
+# endregion
+"""
