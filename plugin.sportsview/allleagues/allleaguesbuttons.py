@@ -88,17 +88,117 @@ class AllLeaguesButtons:
             ################## LOOP 1 STARTS HERE #######################
             for index, sport in enumerate(self.leagues_data):
                 button_label = sport['strLeague']
-                button_image = sport['strBadge']
+                button_image = sport['strLogo']
 
                 #self.display_buttons(button_label, button_image, index)
                 self.display_buttons(button_label, index)
                 
         else:
-            print("ALLSPORTS LIST DOES NOT MATCH")
-            # Write the self.sports_list to the allsports_list.txt file
+            print("ALLLEAGUES LIST DOES NOT MATCH")
+            # Write the self.leagues_list to the allsports_list_(sport).txt file
             with open(self.file_path, "w", encoding="utf-8") as file:
                 file.write(str(self.leagues_list))
 
             # Call the download_and_cache_image method
-            # self.download_and_cache_image()
+            self.download_and_cache_image()
 # endregion
+
+# Method to download and cache the images
+# region
+    def download_and_cache_image(self):
+        # Define the fallback image path
+        self.FALLBACK_IMAGE_PATH = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
+
+        # Get the label and image for each button
+        ################# LOOP 2 STARTS HERE #######################
+        for index, sport in enumerate(self.leagues_data):
+            button_label = sport['strLeague']
+            button_image = sport['strLogo']
+            
+            # If the strSportThumb is empty then use the fallback image
+            if button_image == "":
+                button_image = self.FALLBACK_IMAGE_PATH
+
+            # Download the image to the self.allsports_folder folder
+            response = requests.get(button_image)
+            if response.status_code == 200:
+                sport_image = self.allsports_folder + button_label + ".png"
+                with open(sport_image, 'wb') as f:
+                    f.write(response.content)
+                    print(f"Sport image downloaded and cached: {sport_image}")
+
+                unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
+                with open(unfocused_image, 'wb') as f:
+                    f.write(response.content)
+                    print(f"Unfocused image downloaded and cached: {unfocused_image}")
+
+                # Add the Label to the image using PIL
+                image = Image.open(unfocused_image)
+                draw = ImageDraw.Draw(image)
+
+                # Define the font specifics
+                self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
+                self.font_size = 120
+                font = ImageFont.truetype(self.font_path, self.font_size)
+
+                text = button_label
+
+                text_width, text_height = draw.textsize(text, font)
+                x = (image.width - text_width) // 2  # Center the text horizontally
+                y = (image.height - text_height) //2  # Center the text vertically
+
+                # Draw the black border around the text
+                border_size = 8  # Adjust the border size as needed
+                for i in range(-border_size, border_size + 1):
+                    for j in range(-border_size, border_size + 1):
+                        draw.text((x + i, y + j), text, fill=(44, 44, 44), font=font)
+
+                draw.text((x, y), text, fill=(255, 255, 255), font=font)
+
+                # Save the image with the added label
+                image.save(unfocused_image)
+
+                print(f"Label added to the image: {unfocused_image}")
+
+                # Call the grayscale method inside the loop
+                self.grayscale(image, unfocused_image, button_label, index)
+
+            else:
+                print("Failed to download the image, using fallback image instead")
+                # Use the local fallback image
+                if os.path.exists(self.FALLBACK_IMAGE_PATH):
+                    unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
+
+                    # Copy the local fallback image to the cache folder
+                    with open(unfocused_image, 'wb') as f:
+                        with open(self.FALLBACK_IMAGE_PATH, 'rb') as local_f:
+                            f.write(local_f.read())
+
+                    print(f"Fallback image copied to cache: {unfocused_image}")
+
+                    # Add the Label to the image using PIL
+                    image = Image.open(unfocused_image)
+                    draw = ImageDraw.Draw(image)
+
+                    # Define the font specifics
+                    self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
+                    self.font_size = 180
+                    font = ImageFont.truetype(self.font_path, self.font_size)
+
+                    text = button_label
+                    text_width, text_height = draw.textsize(text, font)
+                    x = (image.width - text_width) // 2  # Center the text horizontally
+                    y = image.height - text_height  # Position the text at the bottom
+
+                    draw.text((x, y), text, fill=(255, 255, 255), font=font)
+
+                    # Save the image with the added label
+                    image.save(unfocused_image)
+
+                    print(f"Label added to the fallback image: {unfocused_image}")
+
+                    # Call the grayscale method inside the loop for the fallback image
+                    self.grayscale(image, unfocused_image, button_label, index)
+
+                else:
+                    print("Fallback image file not found.")
