@@ -118,7 +118,7 @@ class AllSportsButtons:
         # Get the label and image for each button
         ################# LOOP 2 STARTS HERE #######################
         for index, sport in enumerate(self.sports_data):
-            button_label = sport['strLeague']
+            button_label = sport['strSport']
             button_image = sport['strSportThumb']
             
             # If the strSportThumb is empty then use the fallback image
@@ -333,7 +333,7 @@ class AllSportsButtons:
         # Check if the down button is pressed and the new index exceeds the last available sport index
         elif y > 0 and new_index >= len(self.buttons):
             # Do nothing and return without changing the focus
-            print("DO NOTHING AT THE BOTTOM")
+            #print("DO NOTHING AT THE BOTTOM")
             return
 
         if new_index >= 0 and new_index < len(self.buttons): #Check if the new index exists

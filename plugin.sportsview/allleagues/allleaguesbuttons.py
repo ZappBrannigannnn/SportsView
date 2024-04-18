@@ -86,12 +86,13 @@ class AllLeaguesButtons:
             print("ALLLEAGUES_LIST_(SPORT).TXT AND LEAGUES_LIST MATCH")
 
             ################## LOOP 1 STARTS HERE #######################
-            for index, sport in enumerate(self.leagues_data):
-                button_label = sport['strLeague']
-                button_image = sport['strLogo']
+            for index, league in enumerate(self.leagues_data):
+                button_label = league['strLeague']
+                button_image = league['strLogo']
 
+################3333333
                 #self.display_buttons(button_label, button_image, index)
-                self.display_buttons(button_label, index)
+                #self.display_buttons(button_label, index)
                 
         else:
             print("ALLLEAGUES LIST DOES NOT MATCH")
@@ -118,6 +119,11 @@ class AllLeaguesButtons:
             # If the strSportThumb is empty then use the fallback image
             if button_image == "":
                 button_image = self.FALLBACK_IMAGE_PATH
+
+
+
+
+
 
             # Download the image to the self.allsports_folder folder
             response = requests.get(button_image)
