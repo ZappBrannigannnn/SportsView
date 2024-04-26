@@ -4,6 +4,7 @@ import base64
 import xbmcvfs
 import os
 import requests
+from PIL import Image, ImageDraw, ImageFont, ImageOps
 
 # CLASS AllLeaguesButtons
 # region
@@ -39,6 +40,11 @@ class AllLeaguesButtons:
         self.allleagues_folder = xbmcvfs.translatePath("special://home/temp/sportsview/allleagues_cache/")
         # Create the temp folder if it doesn't exist
         os.makedirs(self.allleagues_folder, exist_ok=True)  
+
+        # Check if the folder to store league logos ("special://home/temp/sportsview/myleagues_buttons_cache/{self.sportname}/")
+        self.leaguesbuttons_folder = xbmcvfs.translatePath(f"special://home/temp/sportsview/myleagues_buttons_cache/{self.sportname}/")
+        # Create the temp folder if it doesn't exist
+        os.makedirs(self.leaguesbuttons_folder, exist_ok=True)
 
         # Define the path for allleagues_list_(sport).txt
         self.file_path = xbmcvfs.translatePath(f"special://home/temp/sportsview/allleagues_cache/allleagues_list_{self.sportname}.txt")
@@ -88,11 +94,9 @@ class AllLeaguesButtons:
             ################## LOOP 1 STARTS HERE #######################
             for index, league in enumerate(self.leagues_data):
                 button_label = league['strLeague']
-                button_image = league['strLogo']
+                button_image = league['strBadge']
 
-################3333333
-                #self.display_buttons(button_label, button_image, index)
-                #self.display_buttons(button_label, index)
+                self.display_buttons(button_label, index)
                 
         else:
             print("ALLLEAGUES LIST DOES NOT MATCH")
@@ -101,110 +105,42 @@ class AllLeaguesButtons:
                 file.write(str(self.leagues_list))
 
             # Call the download_and_cache_image method
-            self.download_and_cache_image()
+            self.new_or_cached()
 # endregion
 
-# Method to download and cache the images
+# BUTTONS
 # region
-    def download_and_cache_image(self):
-        # Define the fallback image path
-        self.FALLBACK_IMAGE_PATH = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/allsports/media/imagenotavailable.png")
 
-        # Get the label and image for each button
-        ################# LOOP 2 STARTS HERE #######################
-        for index, sport in enumerate(self.leagues_data):
-            button_label = sport['strLeague']
-            button_image = sport['strLogo']
-            
-            # If the strSportThumb is empty then use the fallback image
-            if button_image == "":
-                button_image = self.FALLBACK_IMAGE_PATH
+    # Check if a new image needed or cached image is available
+    # region
+    def new_or_cached(self):
+        # Define the path to the cache folder
+        self.cache_folder = xbmcvfs.translatePath("special://home/temp/sportsview/myleagues_buttons_cache/" + self.sportname + "/")
+        
+        # Create the cache folder if it doesn't exist
+        if not xbmcvfs.exists(self.cache_folder):
+            xbmcvfs.mkdirs(self.cache_folder)
+        
+        # Get a list of filenames in the cache folder that end with ".png"
+        cached_image_filenames = [filename for filename in os.listdir(self.cache_folder) if filename.endswith(".png")]
 
+        # Remove the file extensions from the cached image filenames
+        cached_leagues = [os.path.splitext(filename)[0] for filename in cached_image_filenames]
 
+        # Calculate the new leagues by finding the difference between available leagues and cached leagues
+        self.new_leagues = [league for league in self.leagues_list if league not in cached_leagues]
 
-
-
-
-            # Download the image to the self.allsports_folder folder
-            response = requests.get(button_image)
-            if response.status_code == 200:
-                sport_image = self.allsports_folder + button_label + ".png"
-                with open(sport_image, 'wb') as f:
-                    f.write(response.content)
-                    print(f"Sport image downloaded and cached: {sport_image}")
-
-                unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
-                with open(unfocused_image, 'wb') as f:
-                    f.write(response.content)
-                    print(f"Unfocused image downloaded and cached: {unfocused_image}")
-
-                # Add the Label to the image using PIL
-                image = Image.open(unfocused_image)
-                draw = ImageDraw.Draw(image)
-
-                # Define the font specifics
-                self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
-                self.font_size = 120
-                font = ImageFont.truetype(self.font_path, self.font_size)
-
-                text = button_label
-
-                text_width, text_height = draw.textsize(text, font)
-                x = (image.width - text_width) // 2  # Center the text horizontally
-                y = (image.height - text_height) //2  # Center the text vertically
-
-                # Draw the black border around the text
-                border_size = 8  # Adjust the border size as needed
-                for i in range(-border_size, border_size + 1):
-                    for j in range(-border_size, border_size + 1):
-                        draw.text((x + i, y + j), text, fill=(44, 44, 44), font=font)
-
-                draw.text((x, y), text, fill=(255, 255, 255), font=font)
-
-                # Save the image with the added label
-                image.save(unfocused_image)
-
-                print(f"Label added to the image: {unfocused_image}")
-
-                # Call the grayscale method inside the loop
-                self.grayscale(image, unfocused_image, button_label, index)
+        # Handle the cached leagues first
+        for league_name in cached_leagues:
+            if league_name not in self.available_leagues:
+                cached_image_path = os.path.join(self.cache_folder, f"{league_name}.png")
 
             else:
-                print("Failed to download the image, using fallback image instead")
-                # Use the local fallback image
-                if os.path.exists(self.FALLBACK_IMAGE_PATH):
-                    unfocused_image = self.allsports_folder + button_label + "_unfocused" + ".png"
+                self.create_cached_buttons(league_name)
 
-                    # Copy the local fallback image to the cache folder
-                    with open(unfocused_image, 'wb') as f:
-                        with open(self.FALLBACK_IMAGE_PATH, 'rb') as local_f:
-                            f.write(local_f.read())
+        # Handle the new leagues
+        for league_name in self.new_leagues:
+            self.create_buttons(league_name)
 
-                    print(f"Fallback image copied to cache: {unfocused_image}")
-
-                    # Add the Label to the image using PIL
-                    image = Image.open(unfocused_image)
-                    draw = ImageDraw.Draw(image)
-
-                    # Define the font specifics
-                    self.font_path = xbmcvfs.translatePath("special://home/addons/plugin.sportsview/resources/fonts/ariblk.ttf")
-                    self.font_size = 180
-                    font = ImageFont.truetype(self.font_path, self.font_size)
-
-                    text = button_label
-                    text_width, text_height = draw.textsize(text, font)
-                    x = (image.width - text_width) // 2  # Center the text horizontally
-                    y = image.height - text_height  # Position the text at the bottom
-
-                    draw.text((x, y), text, fill=(255, 255, 255), font=font)
-
-                    # Save the image with the added label
-                    image.save(unfocused_image)
-
-                    print(f"Label added to the fallback image: {unfocused_image}")
-
-                    # Call the grayscale method inside the loop for the fallback image
-                    self.grayscale(image, unfocused_image, button_label, index)
-
-                else:
-                    print("Fallback image file not found.")
+        self.new_leagues.clear()
+    # endregion
